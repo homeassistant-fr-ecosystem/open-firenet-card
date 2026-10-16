@@ -1,0 +1,59 @@
+# Exemple de tableau de bord Open Firenet
+#
+# À coller dans l'éditeur YAML d'un tableau de bord (mode brut).
+# L'entité ancre `climate.open_firenet` suffit : la carte retrouve seule
+# toutes les autres entités du même appareil.
+
+title: Poêle
+views:
+  # Vue complète : affichage + contrôle
+  - title: Poêle
+    path: poele
+    icon: mdi:fire
+    cards:
+      - type: custom:open-firenet-card
+        entity: climate.open_firenet
+        title: Poêle à granulés
+
+      # Vue synthétique en lecture seule
+      - type: custom:open-firenet-card
+        entity: climate.open_firenet
+        title: Résumé
+        show_controls: false
+        sections:
+          - status
+          - temperatures
+          - consumption
+          - bridge
+
+      # Exemple de surcharge explicite d'une entité (si le renommage automatique échoue)
+      - type: custom:open-firenet-card
+        entity: climate.open_firenet
+        title: Poêle (sources forcées)
+        room_temperature: sensor.open_firenet_room_temperature
+        stove_state: sensor.open_firenet_stove_state
+        sections:
+          - status
+          - temperatures
+
+      # Forcer la langue (en / fr) au lieu de suivre la locale de Home Assistant
+      - type: custom:open-firenet-card
+        entity: climate.open_firenet
+        language: en
+        sections:
+          - status
+          - climate
+
+  # Vue « consommation / entretien »
+  - title: Entretien
+    path: entretien
+    icon: mdi:tools
+    cards:
+      - type: custom:open-firenet-card
+        entity: climate.open_firenet
+        title: Consommation & entretien
+        show_controls: false
+        service_interval: 1500
+        sections:
+          - consumption
+          - mechanics

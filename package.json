@@ -1,0 +1,42 @@
+{
+  "name": "open-firenet-card",
+  "version": "0.1.0",
+  "description": "Lovelace card for Open Firenet / RIKA pellet stoves (Home Assistant integration open-firenet-ha)",
+  "type": "module",
+  "module": "dist/open-firenet-card.js",
+  "main": "dist/open-firenet-card.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openfirenet/open-firenet-card.git"
+  },
+  "keywords": [
+    "home-assistant",
+    "lovelace",
+    "custom-card",
+    "hacs",
+    "open-firenet",
+    "rika",
+    "pellet-stove"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "lit": "^3.1.4"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "happy-dom": "^14.12.3",
+    "rollup": "^4.18.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
