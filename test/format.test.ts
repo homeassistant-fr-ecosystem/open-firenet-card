@@ -54,8 +54,9 @@ describe('formatNumber', () => {
 
   it('rounds to the requested number of decimals', () => {
     // Locale-dependent decimal separator (',' or '.'), so match both.
-    expect(formatNumber(21.456, 1)).toMatch(/21[.,]5/);
-    expect(formatNumber(1234.7, 0)).toMatch(/1\s?235/);
+    expect(formatNumber(21.456, 1)).toMatch(/^21[.,]5$/);
+    // Below 1000 there is no grouping separator, so this is deterministic.
+    expect(formatNumber(234.7, 0)).toBe('235');
   });
 });
 
