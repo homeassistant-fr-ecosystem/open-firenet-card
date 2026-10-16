@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="220" viewBox="0 0 880 220" role="img" aria-label="Open Firenet Card">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f1a24"/>
+      <stop offset="1" stop-color="#12263a"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ff7a18"/>
+      <stop offset="1" stop-color="#ffd166"/>
+    </linearGradient>
+  </defs>
+  <rect width="880" height="220" rx="18" fill="url(#bg)"/>
+  <g transform="translate(70 110)">
+    <path d="M0 -46 C 16 -22, 34 -10, 34 12 a34 34 0 0 1 -68 0 c0 -14 8 -24 16 -32 2 8 6 12 12 14 -6 -14 -4 -28 6 -40z" fill="url(#flame)"/>
+  </g>
+  <text x="188" y="98" fill="#f2f5f8" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="46" font-weight="700">Open Firenet Card</text>
+  <text x="190" y="136" fill="#8fb3cc" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="20">RIKA pellet stove · Home Assistant Lovelace</text>
+  <text x="190" y="168" fill="#5f86a4" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="16">climate · temperatures · MultiAir · consumption · bridge</text>
+</svg>

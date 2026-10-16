@@ -1,5 +1,7 @@
 # Open Firenet Card
 
+![Open Firenet Card — RIKA pellet stove for Home Assistant](docs/images/banner.svg)
+
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -33,7 +35,7 @@ l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
    **Lovelace / Dashboard**.
 3. Cherchez **Open Firenet Card** et installez-la.
 4. La ressource est ajoutée automatiquement. Sinon, ajoutez-la manuellement :
-   `/hacsfiles/open-firenet-card/dist/open-firenet-card.js`, type **module
+   `/hacsfiles/open-firenet-card/open-firenet-card.js`, type **module
    JavaScript**.
 
 ### Installation manuelle

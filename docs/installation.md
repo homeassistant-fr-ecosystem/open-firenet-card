@@ -10,7 +10,7 @@
 4. Recherchez **Open Firenet Card** dans la liste et cliquez **Télécharger**.
 5. HACS ajoute la ressource automatiquement. Vérifiez dans
    **Paramètres → Tableaux de bord → ⋮ → Ressources** la présence de :
-   - URL : `/hacsfiles/open-firenet-card/dist/open-firenet-card.js`
+   - URL : `/hacsfiles/open-firenet-card/open-firenet-card.js`
    - Type : **Module JavaScript**
 6. Videz le cache du navigateur (Ctrl+F5 / Cmd+Shift+R).
 
