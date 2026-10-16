@@ -20,9 +20,6 @@ MultiAir fans, mechanics and the bridge.
 
 - **Status at a glance**: translated stove state (heating, standby, cleaning…),
   animated flame, ambient temperature and target temperature.
-- **Target temperature in the header**: the heating setpoint stays visible at the
-  top of the card whatever the sections state; clicking it opens the Climate
-  dialog.
 - **Collapsible sections**: only the essential sections (Heating, Temperatures,
   Consumption) are expanded on load; click a section header to expand or collapse
   it. A collapsed section keeps its key value in the header (e.g. Heating → the

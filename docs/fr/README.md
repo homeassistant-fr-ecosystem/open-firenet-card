@@ -19,9 +19,6 @@ l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
 
 - **Statut en un coup d'œil** : état du poêle traduit (chauffe, veille, nettoyage…),
   flamme animée, température ambiante et consigne.
-- **Consigne dans l'en-tête** : la consigne de chauffage reste toujours visible en
-  haut de la carte, quel que soit l'état des sections ; un clic l'ouvre dans la
-  boîte de dialogue Climat.
 - **Sections repliables** : seules les sections essentielles (Chauffage,
   Températures, Consommation) sont dépliées au démarrage ; cliquez sur l'en-tête
   d'une section pour la déplier ou la replier. Une section repliée garde sa

@@ -155,14 +155,6 @@ export const cardStyles = css`
     color: var(--warning-color, #ffa600);
   }
 
-  .badge.target {
-    color: var(--warning-color, #ffa000);
-  }
-
-  .badge.clickable:hover {
-    filter: brightness(0.95);
-  }
-
   /* ---------- status ---------- */
   .status {
     display: flex;

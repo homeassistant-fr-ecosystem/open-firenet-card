@@ -526,17 +526,6 @@ describe('more-info on sensor values', () => {
     expect(events.last()).toBe('climate.open_firenet');
   });
 
-  it('shows the target temperature in the header and opens the climate modal', async () => {
-    const el = await mount({});
-    const events = captureMoreInfo(el);
-    const chip = el.shadowRoot?.querySelector('.badge.target') as HTMLElement;
-    expect(chip).toBeDefined();
-    expect(chip.textContent).toContain('22');
-    expect(chip.textContent).toContain('°C');
-    chip.dispatchEvent(new Event('click'));
-    expect(events.last()).toBe('climate.open_firenet');
-  });
-
   it('opens the maintenance modal from the service bar', async () => {
     const el = await mount({});
     const events = captureMoreInfo(el);

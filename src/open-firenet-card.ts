@@ -581,8 +581,6 @@ export class OpenFirenetCard extends LitElement {
     const burning = this._entity('burning');
     const problem = this._entity('problem');
     const hopper = this._entity('hopper_lid');
-    const targetTemp = this._entity('climate')?.attributes.temperature;
-    const climateId = this.entities.climate;
 
     return html`
       <div class="header">
@@ -595,22 +593,6 @@ export class OpenFirenetCard extends LitElement {
           ${model ? html`<span class="model">${model}</span>` : nothing}
         </div>
         <div class="badges">
-          ${typeof targetTemp === 'number'
-            ? html`<span
-                class="badge target clickable"
-                role="button"
-                tabindex="0"
-                title="${this._t('caption.target')}"
-                @click=${() => this._moreInfo(climateId)}
-                @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, climateId)}
-              >
-                <ha-icon icon="mdi:thermometer"></ha-icon>${formatNumber(
-                  targetTemp,
-                  1,
-                  this._lang,
-                )}°C
-              </span>`
-            : nothing}
           ${connected
             ? html`<span class="badge ${isOn(connected) ? 'ok' : 'alarm'}">
                 <ha-icon icon=${isOn(connected) ? 'mdi:lan-connect' : 'mdi:lan-disconnect'}></ha-icon>
