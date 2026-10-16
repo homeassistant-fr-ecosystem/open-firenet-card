@@ -121,10 +121,12 @@ function collectCandidates(hass: HomeAssistant, anchor?: string): string[] {
     return byPlatform;
   }
 
-  // Last resort: entity ids that look like ours.
-  return Object.keys(hass.states).filter((id) =>
-    (id.split('.')[1] ?? '').startsWith(`${DOMAIN}_`),
-  );
+  // Last resort: entity ids that look like ours. The climate entity is named
+  // after the integration itself (`climate.open_firenet`, no role suffix).
+  return Object.keys(hass.states).filter((id) => {
+    const objectId = id.split('.')[1] ?? '';
+    return objectId === DOMAIN || objectId.startsWith(`${DOMAIN}_`);
+  });
 }
 
 /** Resolve every role to an entity id for this stove. */
@@ -162,6 +164,27 @@ export function discoverEntities(
     const match = candidates.find((id) => candidateSet.has(id) && id.endsWith(suffix));
     if (match) {
       result[role] = match;
+      continue;
+    }
+    // The climate entity is named after the integration itself
+    // (`climate.open_firenet`), so it carries no role suffix to match on.
+    if (spec.key === DOMAIN) {
+      const plainId = `${spec.domain}.${DOMAIN}`;
+      if (candidateSet.has(plainId)) {
+        result[role] = plainId;
+      }
+    }
+  }
+
+  // The climate may be renamed and carry no translation key at all; there is only
+  // ever one climate per stove, so the anchor (or any climate candidate) is it.
+  if (!result.climate) {
+    const climate =
+      anchor && anchor.startsWith('climate.') && candidateSet.has(anchor)
+        ? anchor
+        : candidates.find((id) => candidateSet.has(id) && id.startsWith('climate.'));
+    if (climate) {
+      result.climate = climate;
     }
   }
 

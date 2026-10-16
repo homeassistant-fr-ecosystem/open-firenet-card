@@ -105,4 +105,35 @@ describe('discoverEntities', () => {
     const found = discoverEntities(hass, {});
     expect(found.room_temperature).toBe('sensor.open_firenet_room_temperature');
   });
+
+  it('finds the climate even when the registry is empty', () => {
+    const hass = makeHass();
+    hass.entities = {};
+    const found = discoverEntities(hass, {});
+    expect(found.climate).toBe('climate.open_firenet');
+  });
+
+  it('finds the climate when its registry entry has no translation key', () => {
+    const hass = makeHass();
+    hass.entities!['climate.open_firenet'] = {
+      entity_id: 'climate.open_firenet',
+      device_id: 'dev1',
+      platform: 'open_firenet',
+    };
+    const found = discoverEntities(hass, {});
+    expect(found.climate).toBe('climate.open_firenet');
+  });
+
+  it('finds a renamed climate that carries no translation key', () => {
+    const hass = makeHass();
+    delete hass.entities!['climate.open_firenet'];
+    hass.entities!['climate.poele'] = {
+      entity_id: 'climate.poele',
+      device_id: 'dev1',
+      platform: 'open_firenet',
+    };
+    hass.states['climate.poele'] = state('climate.poele');
+    const found = discoverEntities(hass, {});
+    expect(found.climate).toBe('climate.poele');
+  });
 });
