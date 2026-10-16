@@ -24,6 +24,9 @@ l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
 - **Détails au clic** : cliquez sur une valeur (températures, consommation,
   mécanique, passerelle), le statut ou la barre d'entretien pour ouvrir la boîte
   de dialogue de l'entité correspondante dans Home Assistant.
+- **Icônes colorées** : chaque domaine a sa teinte (feu en orange, températures en
+  ambre, mécanique en bleu, liaison en vert, planner en violet…), avec des
+  variables de thème Home Assistant pour s'adapter au thème choisi.
 - **Contrôle** (désactivable) : marche/arrêt, consigne ±, mode (Manuel / Auto /
   Confort), puissance de chauffe, ventilateurs MultiAir et leurs trims.
 - **Découverte automatique** : à partir d'une seule entité ancre, la carte

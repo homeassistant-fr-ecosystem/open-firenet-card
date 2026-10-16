@@ -369,6 +369,39 @@ function t(t,e,i,s){var n,o=arguments.length,r=o<3?e:null===s?s=Object.getOwnPro
     color: var(--secondary-text-color);
   }
 
+  /* ---------- icon accents (per domain) ---------- */
+  .tile ha-icon.tone-heat {
+    color: var(--state-climate-heat-color, #ff6d00);
+  }
+
+  .tile ha-icon.tone-warm {
+    color: var(--warning-color, #ffa000);
+  }
+
+  .tile ha-icon.tone-teal {
+    color: var(--teal-color, #00897b);
+  }
+
+  .tile ha-icon.tone-cool {
+    color: var(--info-color, #039be5);
+  }
+
+  .tile ha-icon.tone-link {
+    color: var(--success-color, #43a047);
+  }
+
+  .tile ha-icon.tone-alarm {
+    color: var(--error-color, #db4437);
+  }
+
+  .tile ha-icon.tone-schedule {
+    color: var(--purple-color, #8e24aa);
+  }
+
+  .tile ha-icon.tone-frost {
+    color: var(--light-blue-color, #29b6f6);
+  }
+
   /* ---------- clickable values (open the more-info dialog) ---------- */
   .clickable {
     cursor: pointer;
@@ -569,6 +602,18 @@ function t(t,e,i,s){var n,o=arguments.length,r=o<3?e:null===s?s=Object.getOwnPro
     background: var(--primary-color);
   }
 
+  .bars.tone-ok i.on {
+    background: var(--success-color, #43a047);
+  }
+
+  .bars.tone-fair i.on {
+    background: var(--warning-color, #ffa600);
+  }
+
+  .bars.tone-weak i.on {
+    background: var(--error-color, #db4437);
+  }
+
   .bars i:nth-child(1) {
     height: 4px;
   }
@@ -724,7 +769,7 @@ function t(t,e,i,s){var n,o=arguments.length,r=o<3?e:null===s?s=Object.getOwnPro
           </span>
         </div>
       </div>
-    `}_renderTemperatures(){const t=[],e=this._entity("room_temperature"),i=this._entity("combustion_temperature"),s=this._entity("board_temperature");return Rt(e)&&t.push(this._tile("mdi:home-thermometer",`${jt(Ht(e),1,this._lang)} °C`,this._t("caption.ambient"),this.entities.room_temperature)),Rt(i)&&t.push(this._tile("mdi:fire",`${jt(Ht(i),0,this._lang)} °C`,this._t("caption.combustion"),this.entities.combustion_temperature)),Rt(s)&&t.push(this._tile("mdi:chip",`${jt(Ht(s),0,this._lang)} °C`,this._t("caption.board"),this.entities.board_temperature)),t.length?L`<div class="tiles">${t}</div>`:K}_renderFans(){const t=Ft.map(t=>({role:t,entity:this._entity(t)})).filter(t=>t.entity);return t.length?L`<div class="section-body">
+    `}_renderTemperatures(){const t=[],e=this._entity("room_temperature"),i=this._entity("combustion_temperature"),s=this._entity("board_temperature");return Rt(e)&&t.push(this._tile("mdi:home-thermometer",`${jt(Ht(e),1,this._lang)} °C`,this._t("caption.ambient"),this.entities.room_temperature,"warm")),Rt(i)&&t.push(this._tile("mdi:fire",`${jt(Ht(i),0,this._lang)} °C`,this._t("caption.combustion"),this.entities.combustion_temperature,"heat")),Rt(s)&&t.push(this._tile("mdi:chip",`${jt(Ht(s),0,this._lang)} °C`,this._t("caption.board"),this.entities.board_temperature,"warm")),t.length?L`<div class="tiles">${t}</div>`:K}_renderFans(){const t=Ft.map(t=>({role:t,entity:this._entity(t)})).filter(t=>t.entity);return t.length?L`<div class="section-body">
       ${t.map(t=>this._renderFan(t.role,t.entity))}
     </div>`:K}_renderFan(t,e){const i="on"===e.state,s=e.attributes.preset_mode??"auto",n="multiair_1"===t?"multiair_1_area":"multiair_2_area",o=this._entity(n),r=Ht(o);return L`
       <div class="fan">
@@ -764,7 +809,7 @@ function t(t,e,i,s){var n,o=arguments.length,r=o<3?e:null===s?s=Object.getOwnPro
               </div>
             </div>`:K}
       </div>
-    `}_renderConsumption(){const t=this._entity("pellets_total_kg"),e=this._entity("pellet_hours"),i=this._entity("service_countdown_kg"),s=[];Rt(t)&&s.push(this._tile("mdi:fire-circle",`${jt(Ht(t),0,this._lang)} kg`,this._t("caption.pellets"),this.entities.pellets_total_kg)),Rt(e)&&s.push(this._tile("mdi:clock-outline",`${jt(Ht(e),0,this._lang)} h`,this._t("caption.operating_hours"),this.entities.pellet_hours));let n=K;if(Rt(i)){const t=Ht(i),e=Number(this._config.service_interval??1500),s=(r=e,null===(o=t)||!Number.isFinite(o)||r<=0?null:Math.max(0,Math.min(100,o/r*100))),a=function(t){return null===t?"ok":t<10?"danger":t<25?"warn":"ok"}(s);n=L`
+    `}_renderConsumption(){const t=this._entity("pellets_total_kg"),e=this._entity("pellet_hours"),i=this._entity("service_countdown_kg"),s=[];Rt(t)&&s.push(this._tile("mdi:fire-circle",`${jt(Ht(t),0,this._lang)} kg`,this._t("caption.pellets"),this.entities.pellets_total_kg,"heat")),Rt(e)&&s.push(this._tile("mdi:clock-outline",`${jt(Ht(e),0,this._lang)} h`,this._t("caption.operating_hours"),this.entities.pellet_hours,"teal"));let n=K;if(Rt(i)){const t=Ht(i),e=Number(this._config.service_interval??1500),s=(r=e,null===(o=t)||!Number.isFinite(o)||r<=0?null:Math.max(0,Math.min(100,o/r*100))),a=function(t){return null===t?"ok":t<10?"danger":t<25?"warn":"ok"}(s);n=L`
         <div
           class="slider-row clickable"
           role="button"
@@ -784,43 +829,43 @@ function t(t,e,i,s){var n,o=arguments.length,r=o<3?e:null===s?s=Object.getOwnPro
         </div>
       `}var o,r;return s.length||n!==K?L`<div class="section-body">
       ${s.length?L`<div class="tiles">${s}</div>`:K} ${n}
-    </div>`:K}_renderMechanics(){const t=[],e=this._entity("fan_speed_rpm"),i=this._entity("auger_speed_rpm"),s=this._entity("air_flaps_percent"),n=this._entity("air_flaps_target_percent");if(Rt(e)&&t.push(this._tile("mdi:fan",`${jt(Ht(e),0,this._lang)} rpm`,this._t("caption.draft"),this.entities.fan_speed_rpm)),Rt(i)&&t.push(this._tile("mdi:screw-machine-flat-top",`${jt(Ht(i),0,this._lang)} rpm`,this._t("caption.auger"),this.entities.auger_speed_rpm)),Rt(s)){const e=Ht(n),i=null!==e?this._t("caption.flaps_target",{value:jt(e,0,this._lang)}):this._t("caption.flaps");t.push(this._tile("mdi:air-filter",`${jt(Ht(s),0,this._lang)} %`,i,this.entities.air_flaps_percent))}return t.length?L`<div class="tiles">${t}</div>`:K}_renderBridge(){const t=[],e=this._entity("wifi_rssi"),i=this._entity("uptime_seconds"),s=this._entity("connected");if(Rt(e)){const i=Ht(e),s=function(t){return null===t?{key:"quality.none",level:0}:t>=-50?{key:"quality.excellent",level:4}:t>=-60?{key:"quality.good",level:3}:t>=-70?{key:"quality.fair",level:2}:t>=-80?{key:"quality.weak",level:1}:{key:"quality.very_weak",level:0}}(i),n=this._t(s.key),o=this.entities.wifi_rssi;t.push(L`<div
+    </div>`:K}_renderMechanics(){const t=[],e=this._entity("fan_speed_rpm"),i=this._entity("auger_speed_rpm"),s=this._entity("air_flaps_percent"),n=this._entity("air_flaps_target_percent");if(Rt(e)&&t.push(this._tile("mdi:fan",`${jt(Ht(e),0,this._lang)} rpm`,this._t("caption.draft"),this.entities.fan_speed_rpm,"cool")),Rt(i)&&t.push(this._tile("mdi:screw-machine-flat-top",`${jt(Ht(i),0,this._lang)} rpm`,this._t("caption.auger"),this.entities.auger_speed_rpm,"cool")),Rt(s)){const e=Ht(n),i=null!==e?this._t("caption.flaps_target",{value:jt(e,0,this._lang)}):this._t("caption.flaps");t.push(this._tile("mdi:air-filter",`${jt(Ht(s),0,this._lang)} %`,i,this.entities.air_flaps_percent,"cool"))}return t.length?L`<div class="tiles">${t}</div>`:K}_renderBridge(){const t=[],e=this._entity("wifi_rssi"),i=this._entity("uptime_seconds"),s=this._entity("connected");if(Rt(e)){const i=Ht(e),s=function(t){return null===t?{key:"quality.none",level:0}:t>=-50?{key:"quality.excellent",level:4}:t>=-60?{key:"quality.good",level:3}:t>=-70?{key:"quality.fair",level:2}:t>=-80?{key:"quality.weak",level:1}:{key:"quality.very_weak",level:0}}(i),n=this._t(s.key),o=s.level>=3?"ok":2===s.level?"fair":"weak",r=this.entities.wifi_rssi;t.push(L`<div
         class="tile clickable"
         role="button"
         tabindex="0"
-        @click=${()=>this._moreInfo(o)}
-        @keydown=${t=>this._onClickableKey(t,o)}
+        @click=${()=>this._moreInfo(r)}
+        @keydown=${t=>this._onClickableKey(t,r)}
       >
-        <span class="bars" title="${n}">
+        <span class="bars tone-${o}" title="${n}">
           ${[1,2,3,4].map(t=>L`<i class="${t<=s.level?"on":""}"></i>`)}
         </span>
         <div class="body">
           <span class="value">${jt(i,0,this._lang)} dBm</span>
           <span class="caption">${this._t("caption.wifi",{quality:n})}</span>
         </div>
-      </div>`)}return Rt(i)&&t.push(this._tile("mdi:timer-outline",function(t,e=Et.en){if(null===t||!Number.isFinite(t)||t<0)return"—";const i=Math.floor(t/86400),s=Math.floor(t%86400/3600),n=Math.floor(t%3600/60);return i>0?`${i} ${e.days} ${s} ${e.hours}`:s>0?`${s} ${e.hours} ${n} ${e.minutes}`:`${n} ${e.minutes}`}(Ht(i),Et[this._lang]),this._t("caption.uptime"),this.entities.uptime_seconds)),s&&t.push(this._tile(zt(s)?"mdi:lan-connect":"mdi:lan-disconnect",this._t(zt(s)?"badge.connected":"badge.offline"),this._t("caption.link"),this.entities.connected)),t.length?L`<div class="tiles">${t}</div>`:K}_renderSchedule(){const t=this._entity("heating_schedule"),e=this._entity("frost_protection");return t||e?L`<div class="tiles">
-      ${this._renderSwitchRow("heating_schedule","switch.heating_schedule","mdi:calendar-clock")}
-      ${this._renderSwitchRow("frost_protection","switch.frost_protection","mdi:snowflake")}
-    </div>`:K}_renderSwitchRow(t,e,i){const s=this._entity(t);if(!s)return K;const n="on"===s.state;return L`<div class="tile">
-      <ha-icon icon=${i}></ha-icon>
+      </div>`)}return Rt(i)&&t.push(this._tile("mdi:timer-outline",function(t,e=Et.en){if(null===t||!Number.isFinite(t)||t<0)return"—";const i=Math.floor(t/86400),s=Math.floor(t%86400/3600),n=Math.floor(t%3600/60);return i>0?`${i} ${e.days} ${s} ${e.hours}`:s>0?`${s} ${e.hours} ${n} ${e.minutes}`:`${n} ${e.minutes}`}(Ht(i),Et[this._lang]),this._t("caption.uptime"),this.entities.uptime_seconds,"cool")),s&&t.push(this._tile(zt(s)?"mdi:lan-connect":"mdi:lan-disconnect",this._t(zt(s)?"badge.connected":"badge.offline"),this._t("caption.link"),this.entities.connected,zt(s)?"link":"alarm")),t.length?L`<div class="tiles">${t}</div>`:K}_renderSchedule(){const t=this._entity("heating_schedule"),e=this._entity("frost_protection");return t||e?L`<div class="tiles">
+      ${this._renderSwitchRow("heating_schedule","switch.heating_schedule","mdi:calendar-clock","schedule")}
+      ${this._renderSwitchRow("frost_protection","switch.frost_protection","mdi:snowflake","frost")}
+    </div>`:K}_renderSwitchRow(t,e,i,s){const n=this._entity(t);if(!n)return K;const o="on"===n.state;return L`<div class="tile">
+      <ha-icon class="tone-${s}" icon=${i}></ha-icon>
       <div class="body">
         <span class="value">${this._t(e)}</span>
         <span class="caption"
-          >${this._t(n?"caption.enabled":"caption.disabled")}</span
+          >${this._t(o?"caption.enabled":"caption.disabled")}</span
         >
       </div>
       <span class="spacer"></span>
-      <button class="icon" ?disabled=${!this._controls} @click=${()=>this._toggleSwitch(t,!n)}>
-        <ha-icon icon=${n?"mdi:toggle-switch":"mdi:toggle-switch-off-outline"}></ha-icon>
+      <button class="icon" ?disabled=${!this._controls} @click=${()=>this._toggleSwitch(t,!o)}>
+        <ha-icon icon=${o?"mdi:toggle-switch":"mdi:toggle-switch-off-outline"}></ha-icon>
       </button>
-    </div>`}_tile(t,e,i,s){return L`<div
+    </div>`}_tile(t,e,i,s,n){return L`<div
       class="tile ${s?"clickable":""}"
       role=${s?"button":K}
       tabindex=${s?"0":K}
       @click=${s?()=>this._moreInfo(s):K}
       @keydown=${s?t=>this._onClickableKey(t,s):K}
     >
-      <ha-icon icon=${t}></ha-icon>
+      <ha-icon class=${n?`tone-${n}`:K} icon=${t}></ha-icon>
       <div class="body">
         <span class="value">${e}</span>
         <span class="caption">${i}</span>

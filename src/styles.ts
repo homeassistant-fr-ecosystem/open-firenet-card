@@ -262,6 +262,39 @@ export const cardStyles = css`
     color: var(--secondary-text-color);
   }
 
+  /* ---------- icon accents (per domain) ---------- */
+  .tile ha-icon.tone-heat {
+    color: var(--state-climate-heat-color, #ff6d00);
+  }
+
+  .tile ha-icon.tone-warm {
+    color: var(--warning-color, #ffa000);
+  }
+
+  .tile ha-icon.tone-teal {
+    color: var(--teal-color, #00897b);
+  }
+
+  .tile ha-icon.tone-cool {
+    color: var(--info-color, #039be5);
+  }
+
+  .tile ha-icon.tone-link {
+    color: var(--success-color, #43a047);
+  }
+
+  .tile ha-icon.tone-alarm {
+    color: var(--error-color, #db4437);
+  }
+
+  .tile ha-icon.tone-schedule {
+    color: var(--purple-color, #8e24aa);
+  }
+
+  .tile ha-icon.tone-frost {
+    color: var(--light-blue-color, #29b6f6);
+  }
+
   /* ---------- clickable values (open the more-info dialog) ---------- */
   .clickable {
     cursor: pointer;
@@ -460,6 +493,18 @@ export const cardStyles = css`
 
   .bars i.on {
     background: var(--primary-color);
+  }
+
+  .bars.tone-ok i.on {
+    background: var(--success-color, #43a047);
+  }
+
+  .bars.tone-fair i.on {
+    background: var(--warning-color, #ffa600);
+  }
+
+  .bars.tone-weak i.on {
+    background: var(--error-color, #db4437);
   }
 
   .bars i:nth-child(1) {

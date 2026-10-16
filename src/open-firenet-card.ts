@@ -42,6 +42,23 @@ import {
 
 const FAN_ROLES: readonly Role[] = ['multiair_1', 'multiair_2'];
 
+/**
+ * Icon accent, keyed by domain. Maps to a `.tone-*` CSS class so the card is
+ * warmer without hard-coding colours in every render method.
+ */
+type IconTone =
+  | 'heat'
+  | 'warm'
+  | 'teal'
+  | 'cool'
+  | 'link'
+  | 'schedule'
+  | 'frost'
+  | 'ok'
+  | 'fair'
+  | 'weak'
+  | 'alarm';
+
 /** Section titles, used by the collapsible headers. */
 const SECTION_TITLE_KEYS: Record<SectionId, TranslationKey> = {
   status: 'section.status',
@@ -665,6 +682,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(room), 1, this._lang)} °C`,
           this._t('caption.ambient'),
           this.entities.room_temperature,
+          'warm',
         ),
       );
     }
@@ -675,6 +693,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(combustion), 0, this._lang)} °C`,
           this._t('caption.combustion'),
           this.entities.combustion_temperature,
+          'heat',
         ),
       );
     }
@@ -685,6 +704,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(board), 0, this._lang)} °C`,
           this._t('caption.board'),
           this.entities.board_temperature,
+          'warm',
         ),
       );
     }
@@ -780,6 +800,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(pellets), 0, this._lang)} kg`,
           this._t('caption.pellets'),
           this.entities.pellets_total_kg,
+          'heat',
         ),
       );
     }
@@ -790,6 +811,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(hours), 0, this._lang)} h`,
           this._t('caption.operating_hours'),
           this.entities.pellet_hours,
+          'teal',
         ),
       );
     }
@@ -846,6 +868,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(draft), 0, this._lang)} rpm`,
           this._t('caption.draft'),
           this.entities.fan_speed_rpm,
+          'cool',
         ),
       );
     }
@@ -856,6 +879,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(auger), 0, this._lang)} rpm`,
           this._t('caption.auger'),
           this.entities.auger_speed_rpm,
+          'cool',
         ),
       );
     }
@@ -871,6 +895,7 @@ export class OpenFirenetCard extends LitElement {
           `${formatNumber(stateNumber(flaps), 0, this._lang)} %`,
           caption,
           this.entities.air_flaps_percent,
+          'cool',
         ),
       );
     }
@@ -890,6 +915,7 @@ export class OpenFirenetCard extends LitElement {
       const dbm = stateNumber(rssi);
       const quality = rssiQuality(dbm);
       const qualityLabel = this._t(quality.key);
+      const qualityTone: IconTone = quality.level >= 3 ? 'ok' : quality.level === 2 ? 'fair' : 'weak';
       const rssiId = this.entities.wifi_rssi;
       tiles.push(html`<div
         class="tile clickable"
@@ -898,7 +924,7 @@ export class OpenFirenetCard extends LitElement {
         @click=${() => this._moreInfo(rssiId)}
         @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, rssiId)}
       >
-        <span class="bars" title="${qualityLabel}">
+        <span class="bars tone-${qualityTone}" title="${qualityLabel}">
           ${[1, 2, 3, 4].map((n) => html`<i class="${n <= quality.level ? 'on' : ''}"></i>`)}
         </span>
         <div class="body">
@@ -914,6 +940,7 @@ export class OpenFirenetCard extends LitElement {
           formatDuration(stateNumber(uptime), DURATION_UNITS[this._lang]),
           this._t('caption.uptime'),
           this.entities.uptime_seconds,
+          'cool',
         ),
       );
     }
@@ -924,6 +951,7 @@ export class OpenFirenetCard extends LitElement {
           this._t(isOn(connected) ? 'badge.connected' : 'badge.offline'),
           this._t('caption.link'),
           this.entities.connected,
+          isOn(connected) ? 'link' : 'alarm',
         ),
       );
     }
@@ -940,8 +968,18 @@ export class OpenFirenetCard extends LitElement {
       return nothing;
     }
     return html`<div class="tiles">
-      ${this._renderSwitchRow('heating_schedule', 'switch.heating_schedule', 'mdi:calendar-clock')}
-      ${this._renderSwitchRow('frost_protection', 'switch.frost_protection', 'mdi:snowflake')}
+      ${this._renderSwitchRow(
+        'heating_schedule',
+        'switch.heating_schedule',
+        'mdi:calendar-clock',
+        'schedule',
+      )}
+      ${this._renderSwitchRow(
+        'frost_protection',
+        'switch.frost_protection',
+        'mdi:snowflake',
+        'frost',
+      )}
     </div>`;
   }
 
@@ -949,6 +987,7 @@ export class OpenFirenetCard extends LitElement {
     role: Role,
     labelKey: TranslationKey,
     icon: string,
+    tone: IconTone,
   ): TemplateResult | typeof nothing {
     const entity = this._entity(role);
     if (!entity) {
@@ -956,7 +995,7 @@ export class OpenFirenetCard extends LitElement {
     }
     const on = entity.state === 'on';
     return html`<div class="tile">
-      <ha-icon icon=${icon}></ha-icon>
+      <ha-icon class="tone-${tone}" icon=${icon}></ha-icon>
       <div class="body">
         <span class="value">${this._t(labelKey)}</span>
         <span class="caption"
@@ -975,6 +1014,7 @@ export class OpenFirenetCard extends LitElement {
     value: string,
     caption: string,
     entityId?: string,
+    tone?: IconTone,
   ): TemplateResult {
     return html`<div
       class="tile ${entityId ? 'clickable' : ''}"
@@ -983,7 +1023,7 @@ export class OpenFirenetCard extends LitElement {
       @click=${entityId ? () => this._moreInfo(entityId) : nothing}
       @keydown=${entityId ? (e: KeyboardEvent) => this._onClickableKey(e, entityId) : nothing}
     >
-      <ha-icon icon=${icon}></ha-icon>
+      <ha-icon class=${tone ? `tone-${tone}` : nothing} icon=${icon}></ha-icon>
       <div class="body">
         <span class="value">${value}</span>
         <span class="caption">${caption}</span>

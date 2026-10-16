@@ -38,6 +38,7 @@ function makeHass(): HomeAssistant {
     reg('fan.open_firenet_multiair_1', 'multiair_1'),
     reg('number.open_firenet_multiair_1_convection_trim', 'multiair_1_area'),
     reg('switch.open_firenet_heating_schedule', 'heating_schedule'),
+    reg('switch.open_firenet_frost_protection', 'frost_protection'),
   ];
   const entities: Record<string, EntityRegistryEntry> = {};
   for (const e of entries) {
@@ -106,6 +107,10 @@ function makeHass(): HomeAssistant {
       'switch.open_firenet_heating_schedule': st(
         'switch.open_firenet_heating_schedule',
         'on',
+      ),
+      'switch.open_firenet_frost_protection': st(
+        'switch.open_firenet_frost_protection',
+        'off',
       ),
     },
     entities,
@@ -544,5 +549,38 @@ describe('more-info on sensor values', () => {
     ) as HTMLElement;
     tile.dispatchEvent(new Event('click'));
     expect(events.last()).toBeUndefined();
+  });
+});
+
+describe('icon accents', () => {
+  function tileIcon(el: OpenFirenetCard, label: string): Element | undefined {
+    const tile = Array.from(el.shadowRoot?.querySelectorAll('.tile') ?? []).find((t) =>
+      t.textContent?.includes(label),
+    );
+    return tile?.querySelector('ha-icon') ?? undefined;
+  }
+
+  it('colours fire and temperature icons by domain', async () => {
+    const el = await mount({});
+    expect(tileIcon(el, 'Chambre de combustion')?.classList.contains('tone-heat')).toBe(true);
+    expect(tileIcon(el, 'Ambiante')?.classList.contains('tone-warm')).toBe(true);
+    expect(tileIcon(el, 'Granulés consommés')?.classList.contains('tone-heat')).toBe(true);
+  });
+
+  it('colours mechanics icons cool', async () => {
+    const el = await mount({ expanded_sections: ['mechanics'] });
+    expect(tileIcon(el, 'Tirage')?.classList.contains('tone-cool')).toBe(true);
+  });
+
+  it('colours the schedule and frost rows', async () => {
+    const el = await mount({ expanded_sections: ['schedule'] });
+    expect(tileIcon(el, 'Chauffage programmé')?.classList.contains('tone-schedule')).toBe(true);
+    expect(tileIcon(el, 'Hors-gel')?.classList.contains('tone-frost')).toBe(true);
+  });
+
+  it('tints the wifi bars by signal quality', async () => {
+    const el = await mount({ expanded_sections: ['bridge'] });
+    // makeHass RSSI is -58 dBm → "good" → ok tone.
+    expect(el.shadowRoot?.querySelector('.bars')?.classList.contains('tone-ok')).toBe(true);
   });
 });
