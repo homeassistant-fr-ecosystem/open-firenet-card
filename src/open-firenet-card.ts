@@ -59,6 +59,12 @@ type IconTone =
   | 'weak'
   | 'alarm';
 
+/** Compact at-a-glance value shown in a section header while it is collapsed. */
+interface SectionSummary {
+  text: string;
+  entityId?: string;
+}
+
 /** Section titles, used by the collapsible headers. */
 const SECTION_TITLE_KEYS: Record<SectionId, TranslationKey> = {
   status: 'section.status',
@@ -420,22 +426,124 @@ export class OpenFirenetCard extends LitElement {
       return html`<div class="section">${body}</div>`;
     }
     const expanded = this._isExpanded(section);
+    const summary = expanded ? null : this._sectionSummary(section);
     return html`
       <div class="section collapsible ${expanded ? 'expanded' : 'collapsed'}">
-        <button
-          class="section-toggle"
-          aria-expanded=${String(expanded)}
-          @click=${() => this._toggleSection(section)}
-        >
-          <ha-icon
-            class="chevron"
-            icon=${expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'}
-          ></ha-icon>
-          <span class="section-title">${this._t(SECTION_TITLE_KEYS[section])}</span>
-        </button>
+        <div class="section-header">
+          <button
+            class="section-toggle"
+            aria-expanded=${String(expanded)}
+            @click=${() => this._toggleSection(section)}
+          >
+            <ha-icon
+              class="chevron"
+              icon=${expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'}
+            ></ha-icon>
+            <span class="section-title">${this._t(SECTION_TITLE_KEYS[section])}</span>
+          </button>
+          ${summary
+            ? html`<span
+                class="section-summary ${summary.entityId ? 'clickable' : ''}"
+                role=${summary.entityId ? 'button' : nothing}
+                tabindex=${summary.entityId ? '0' : nothing}
+                @click=${summary.entityId ? () => this._moreInfo(summary.entityId) : nothing}
+                @keydown=${summary.entityId
+                  ? (e: KeyboardEvent) => this._onClickableKey(e, summary.entityId)
+                  : nothing}
+                >${summary.text}</span
+              >`
+            : nothing}
+        </div>
         ${expanded ? body : nothing}
       </div>
     `;
+  }
+
+  /** A key value kept visible in the header of a collapsed section. */
+  private _sectionSummary(section: SectionId): SectionSummary | null {
+    switch (section) {
+      case 'climate': {
+        const target = this._entity('climate')?.attributes.temperature;
+        if (typeof target !== 'number') {
+          return null;
+        }
+        return {
+          text: `${formatNumber(target, 1, this._lang)}°C`,
+          entityId: this.entities.climate,
+        };
+      }
+      case 'temperatures': {
+        const ambient =
+          this._entity('climate')?.attributes.current_temperature ??
+          stateNumber(this._entity('room_temperature'));
+        if (ambient === null || ambient === undefined) {
+          return null;
+        }
+        return {
+          text: `${formatNumber(ambient, 1, this._lang)}°C`,
+          entityId: this.entities.room_temperature ?? this.entities.climate,
+        };
+      }
+      case 'fans': {
+        const fans = FAN_ROLES.map((role) => this._entity(role)).filter(
+          (f): f is HassEntity => !!f,
+        );
+        if (!fans.length) {
+          return null;
+        }
+        const on = fans.filter((f) => f.state === 'on').length;
+        return { text: `${on}/${fans.length}`, entityId: this.entities.multiair_1 };
+      }
+      case 'consumption': {
+        const pellets = this._entity('pellets_total_kg');
+        if (!isAvailable(pellets)) {
+          return null;
+        }
+        return {
+          text: `${formatNumber(stateNumber(pellets), 0, this._lang)} kg`,
+          entityId: this.entities.pellets_total_kg,
+        };
+      }
+      case 'mechanics': {
+        const draft = this._entity('fan_speed_rpm');
+        if (!isAvailable(draft)) {
+          return null;
+        }
+        return {
+          text: `${formatNumber(stateNumber(draft), 0, this._lang)} rpm`,
+          entityId: this.entities.fan_speed_rpm,
+        };
+      }
+      case 'bridge': {
+        const rssi = this._entity('wifi_rssi');
+        if (isAvailable(rssi)) {
+          return {
+            text: `${formatNumber(stateNumber(rssi), 0, this._lang)} dBm`,
+            entityId: this.entities.wifi_rssi,
+          };
+        }
+        const connected = this._entity('connected');
+        if (connected) {
+          return {
+            text: this._t(isOn(connected) ? 'badge.connected' : 'badge.offline'),
+            entityId: this.entities.connected,
+          };
+        }
+        return null;
+      }
+      case 'schedule': {
+        const schedule = this._entity('heating_schedule');
+        if (!schedule) {
+          return null;
+        }
+        return {
+          text: this._t(schedule.state === 'on' ? 'caption.enabled' : 'caption.disabled'),
+          entityId: this.entities.heating_schedule,
+        };
+      }
+      default:
+        return null;
+    }
   }
 
   private _renderSectionBody(section: SectionId): TemplateResult | typeof nothing {
@@ -473,6 +581,8 @@ export class OpenFirenetCard extends LitElement {
     const burning = this._entity('burning');
     const problem = this._entity('problem');
     const hopper = this._entity('hopper_lid');
+    const targetTemp = this._entity('climate')?.attributes.temperature;
+    const climateId = this.entities.climate;
 
     return html`
       <div class="header">
@@ -485,6 +595,22 @@ export class OpenFirenetCard extends LitElement {
           ${model ? html`<span class="model">${model}</span>` : nothing}
         </div>
         <div class="badges">
+          ${typeof targetTemp === 'number'
+            ? html`<span
+                class="badge target clickable"
+                role="button"
+                tabindex="0"
+                title="${this._t('caption.target')}"
+                @click=${() => this._moreInfo(climateId)}
+                @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, climateId)}
+              >
+                <ha-icon icon="mdi:thermometer"></ha-icon>${formatNumber(
+                  targetTemp,
+                  1,
+                  this._lang,
+                )}°C
+              </span>`
+            : nothing}
           ${connected
             ? html`<span class="badge ${isOn(connected) ? 'ok' : 'alarm'}">
                 <ha-icon icon=${isOn(connected) ? 'mdi:lan-connect' : 'mdi:lan-disconnect'}></ha-icon>

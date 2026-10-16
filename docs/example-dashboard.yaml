@@ -1,26 +1,28 @@
-# Exemple de tableau de bord Open Firenet
+# Open Firenet example dashboard
 #
-# À coller dans l'éditeur YAML d'un tableau de bord (mode brut).
-# L'entité ancre `climate.open_firenet` suffit : la carte retrouve seule
-# toutes les autres entités du même appareil.
+# English version — Français: ../fr/example-dashboard.yaml
+#
+# Paste this into a dashboard's YAML editor (raw configuration mode).
+# The anchor entity `climate.open_firenet` is enough: the card finds every
+# other entity of the same device on its own.
 
-title: Poêle
+title: Stove
 views:
-  # Vue complète : affichage + contrôle
-  - title: Poêle
-    path: poele
+  # Full view: display + controls
+  - title: Stove
+    path: stove
     icon: mdi:fire
     cards:
       - type: custom:open-firenet-card
         entity: climate.open_firenet
-        title: Poêle à granulés
+        title: Pellet stove
 
-      # Vue synthétique en lecture seule.
-      # `expanded_sections` choisit les sections dépliées au démarrage ;
-      # les autres n'affichent que leur en-tête (cliquable pour déplier).
+      # Compact read-only view.
+      # `expanded_sections` picks the sections expanded on load; the others
+      # show only their header (clickable to expand).
       - type: custom:open-firenet-card
         entity: climate.open_firenet
-        title: Résumé
+        title: Summary
         show_controls: false
         sections:
           - status
@@ -31,17 +33,17 @@ views:
           - temperatures
           - consumption
 
-      # Exemple de surcharge explicite d'une entité (si le renommage automatique échoue)
+      # Example of explicitly overriding an entity (if auto-renaming fails)
       - type: custom:open-firenet-card
         entity: climate.open_firenet
-        title: Poêle (sources forcées)
+        title: Stove (forced sources)
         room_temperature: sensor.open_firenet_room_temperature
         stove_state: sensor.open_firenet_stove_state
         sections:
           - status
           - temperatures
 
-      # Forcer la langue (en / fr) au lieu de suivre la locale de Home Assistant
+      # Force the language (en / fr) instead of following the Home Assistant locale
       - type: custom:open-firenet-card
         entity: climate.open_firenet
         language: en
@@ -49,14 +51,14 @@ views:
           - status
           - climate
 
-  # Vue « consommation / entretien »
-  - title: Entretien
-    path: entretien
+  # "Consumption / maintenance" view
+  - title: Maintenance
+    path: maintenance
     icon: mdi:tools
     cards:
       - type: custom:open-firenet-card
         entity: climate.open_firenet
-        title: Consommation & entretien
+        title: Consumption & maintenance
         show_controls: false
         service_interval: 1500
         sections:

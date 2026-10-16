@@ -5,99 +5,111 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Carte Lovelace pour l'intégration Home Assistant
-[open-firenet-ha](https://github.com/openfirenet/open-firenet-ha) : affiche l'état
-d'un poêle à granulés RIKA piloté par le bridge [Open Firenet](https://github.com/openfirenet/open-firenet)
-et, en option, permet de le contrôler.
+**English** · [Français](docs/fr/README.md)
 
-Une seule carte regroupe le statut du poêle, les températures, la consommation,
-l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
+A Lovelace card for the Home Assistant integration
+[open-firenet-ha](https://github.com/openfirenet/open-firenet-ha): it shows the
+state of a RIKA pellet stove driven by the
+[Open Firenet](https://github.com/openfirenet/open-firenet) bridge and, optionally,
+lets you control it.
 
-## Fonctionnalités
+A single card gathers the stove status, temperatures, consumption, maintenance,
+MultiAir fans, mechanics and the bridge.
 
-- **Statut en un coup d'œil** : état du poêle traduit (chauffe, veille, nettoyage…),
-  flamme animée, température ambiante et consigne.
-- **Sections repliables** : seules les sections essentielles (Chauffage,
-  Températures, Consommation) sont dépliées au démarrage ; cliquez sur l'en-tête
-  d'une section pour la déplier ou la replier. Les sections importantes restent
-  visibles, le reste est à portée de clic.
-- **Détails au clic** : cliquez sur une valeur (températures, consommation,
-  mécanique, passerelle), le statut ou la barre d'entretien pour ouvrir la boîte
-  de dialogue de l'entité correspondante dans Home Assistant.
-- **Icônes colorées** : chaque domaine a sa teinte (feu en orange, températures en
-  ambre, mécanique en bleu, liaison en vert, planner en violet…), avec des
-  variables de thème Home Assistant pour s'adapter au thème choisi.
-- **Contrôle** (désactivable) : marche/arrêt, consigne ±, mode (Manuel / Auto /
-  Confort), puissance de chauffe, ventilateurs MultiAir et leurs trims.
-- **Découverte automatique** : à partir d'une seule entité ancre, la carte
-  retrouve toutes les entités du même appareil. Aucune liste d'entités à saisir.
-- **Robuste** : les entités absentes (modèle sans MultiAir, option non activée,
-  firmware ancien) sont simplement masquées.
-- **Éditeur visuel** : configurez l'entité, les sections et les contrôles depuis
-  l'interface, sans écrire de YAML.
+## Features
+
+- **Status at a glance**: translated stove state (heating, standby, cleaning…),
+  animated flame, ambient temperature and target temperature.
+- **Target temperature in the header**: the heating setpoint stays visible at the
+  top of the card whatever the sections state; clicking it opens the Climate
+  dialog.
+- **Collapsible sections**: only the essential sections (Heating, Temperatures,
+  Consumption) are expanded on load; click a section header to expand or collapse
+  it. A collapsed section keeps its key value in the header (e.g. Heating → the
+  target temperature), which stays clickable. The important sections stay
+  visible, the rest is one click away.
+- **Click for details**: click a value (temperatures, consumption, mechanics,
+  bridge), the status or the maintenance bar to open Home Assistant's more-info
+  dialog for the matching entity.
+- **Coloured icons**: each domain has its own accent (fire in orange, temperatures
+  in amber, mechanics in blue, link in green, schedule in violet…), using Home
+  Assistant theme variables so it follows the selected theme.
+- **Controls** (can be disabled): on/off, target ±, mode (Manual / Auto / Comfort),
+  heating power, MultiAir fans and their trims.
+- **Auto-discovery**: from a single anchor entity, the card finds every entity of
+  the same device. No entity list to fill in.
+- **Robust**: missing entities (model without MultiAir, option not enabled, older
+  firmware) are simply hidden.
+- **Visual editor**: configure the entity, sections and controls from the UI,
+  without writing YAML.
 
 ## Installation
 
-### Via HACS (recommandé)
+See the detailed guide: [`docs/installation.md`](docs/installation.md).
 
-1. HACS → **Tableau de bord** (Dashboard) → ⋮ → **Dépôts personnalisés**.
-2. Ajoutez `https://github.com/openfirenet/open-firenet-card` en catégorie
+### Via HACS (recommended)
+
+1. HACS → **Dashboard** → ⋮ → **Custom repositories**.
+2. Add `https://github.com/openfirenet/open-firenet-card` with category
    **Lovelace / Dashboard**.
-3. Cherchez **Open Firenet Card** et installez-la.
-4. La ressource est ajoutée automatiquement. Sinon, ajoutez-la manuellement :
-   `/hacsfiles/open-firenet-card/open-firenet-card.js`, type **module
-   JavaScript**.
+3. Search for **Open Firenet Card** and install it.
+4. The resource is added automatically. Otherwise, add it manually:
+   `/hacsfiles/open-firenet-card/open-firenet-card.js`, type **JavaScript
+   module**.
 
-### Installation manuelle
+### Manual installation
 
-1. Copiez `dist/open-firenet-card.js` dans `<config>/www/`.
-2. Paramètres → **Tableaux de bord** → ⋮ → **Ressources** → **Ajouter** :
-   URL `/local/open-firenet-card.js`, type **Module JavaScript**.
-3. Rechargez la page (Ctrl+F5).
+1. Copy `dist/open-firenet-card.js` into `<config>/www/`.
+2. Settings → **Dashboards** → ⋮ → **Resources** → **Add**:
+   URL `/local/open-firenet-card.js`, type **JavaScript module**.
+3. Reload the page (Ctrl+F5).
 
-## Utilisation
+## Usage
 
-Ajoutez la carte à un tableau de bord (bouton **Ajouter une carte**, cherchez
-**Open Firenet**), ou en YAML :
+Add the card to a dashboard (button **Add card**, search for **Open Firenet**),
+or in YAML:
 
 ```yaml
 type: custom:open-firenet-card
 entity: climate.open_firenet
-title: Poêle à granulés
+title: Pellet stove
 ```
 
 ## Options
 
-| Option | Type | Défaut | Description |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `entity` | `string` | `climate.open_firenet` | Entité **ancre** : la carte en déduit toutes les autres entités du même appareil. |
-| `title` | `string` | nom de l'appareil | Titre affiché en haut de la carte. |
-| `show_controls` | `bool` | `true` | Affiche les commandes. `false` = carte en lecture seule. |
-| `sections` | `string[]` | toutes | Ordre et visibilité des sections (voir ci-dessous). |
-| `expanded_sections` | `string[]` | `climate`, `temperatures`, `consumption` | Sections dépliées au démarrage. Les autres démarrent repliées (en-tête cliquable). `[]` = tout replié. |
-| `service_interval` | `number` | `1500` | Intervalle d'entretien en kg, pour la barre de la section « Entretien ». |
-| `language` | `string` | locale HA | Force la langue de la carte (`en`, `fr`). Sinon suit la locale de Home Assistant, avec repli sur l'anglais. |
-| *(rôle)* | `string` | auto | N'importe quel rôle ci-dessous peut recevoir un `entity_id` explicite pour forcer la source. |
+| `entity` | `string` | `climate.open_firenet` | **Anchor** entity: the card derives every other entity of the same device from it. |
+| `title` | `string` | device name | Title shown at the top of the card. |
+| `show_controls` | `bool` | `true` | Show the controls. `false` = read-only card. |
+| `sections` | `string[]` | all | Order and visibility of the sections (see below). |
+| `expanded_sections` | `string[]` | `climate`, `temperatures`, `consumption` | Sections expanded on load. The others start collapsed (clickable header). `[]` = all collapsed. |
+| `service_interval` | `number` | `1500` | Maintenance interval in kg, for the “Maintenance” section bar. |
+| `language` | `string` | HA locale | Force the card language (`en`, `fr`). Otherwise follows the Home Assistant locale, falling back to English. |
+| *(role)* | `string` | auto | Any role below can take an explicit `entity_id` to force the source. |
 
 ### Sections
 
-| Id | Contenu |
+| Id | Content |
 |---|---|
-| `status` | État du poêle, flamme, température ambiante, consigne |
-| `climate` | Marche/arrêt, consigne ±, mode, puissance |
-| `temperatures` | Ambiante, chambre de combustion, carte mère |
-| `fans` | Ventilateurs MultiAir 1 & 2 (marche, vitesse, trim) |
-| `consumption` | Granulés consommés, heures de fonctionnement, entretien |
-| `mechanics` | Tirage (rpm), vis sans fin (rpm), volets d'air |
-| `bridge` | Wi-Fi (RSSI), uptime, liaison poêle |
-| `schedule` | Chauffage programmé, protection hors-gel |
+| `status` | Stove state, flame, ambient temperature, target |
+| `climate` | On/off, target ±, mode, power |
+| `temperatures` | Ambient, combustion chamber, mainboard |
+| `fans` | MultiAir 1 & 2 fans (on/off, speed, trim) |
+| `consumption` | Pellets consumed, operating hours, maintenance |
+| `mechanics` | Flue draft (rpm), auger (rpm), air flaps |
+| `bridge` | Wi-Fi (RSSI), uptime, stove link |
+| `schedule` | Heating schedule, frost protection |
 
-La section **`status`** est toujours visible. Toutes les autres sont **repliables** :
-seules celles listées dans `expanded_sections` sont dépliées au démarrage, les
-autres n'affichent que leur en-tête. Un clic sur l'en-tête déplie/replie la
-section (même en lecture seule, `show_controls: false`).
+The **`status`** section is always visible. All the others are **collapsible**:
+only those listed in `expanded_sections` are expanded on load, the others show
+just their header. Clicking a header expands/collapses the section (even in
+read-only mode, `show_controls: false`). A collapsed header also keeps the
+section's key value — the target temperature for Heating, the ambient
+temperature, the pellet count, the flue draft, the Wi-Fi level or the schedule
+state — and clicking it opens the matching entity dialog.
 
-Exemple en lecture seule, trois sections :
+Read-only example with three sections:
 
 ```yaml
 type: custom:open-firenet-card
@@ -112,7 +124,7 @@ expanded_sections:
   - consumption
 ```
 
-### Rôles surchargeables
+### Overridable roles
 
 `climate`, `stove_state`, `connected`, `burning`, `problem`, `hopper_lid`,
 `room_temperature`, `combustion_temperature`, `board_temperature`,
@@ -123,15 +135,15 @@ expanded_sections:
 `bake_target_temperature`, `multiair_1`, `multiair_2`, `multiair_1_area`,
 `multiair_2_area`, `heating_schedule`, `frost_protection`.
 
-## Exemple de tableau de bord
+## Example dashboard
 
-Voir [`docs/example-dashboard.yaml`](docs/example-dashboard.yaml).
+See [`docs/example-dashboard.yaml`](docs/example-dashboard.yaml).
 
-## Langue
+## Language
 
-L'interface de la carte et de l'éditeur suit la langue de Home Assistant :
-**français** et **anglais** sont fournis, avec repli sur l'anglais pour toute
-autre langue. Pour forcer une langue, utilisez l'option `language` :
+The card and editor UI follow the Home Assistant language: **English** and
+**French** are provided, falling back to English for any other language. To force
+a language, use the `language` option:
 
 ```yaml
 type: custom:open-firenet-card
@@ -139,22 +151,22 @@ entity: climate.open_firenet
 language: en
 ```
 
-Pour ajouter une langue, complétez le dictionnaire dans `src/localize.ts` :
-le type TypeScript impose de fournir toutes les clés de la langue de référence
-(`en`), et un test vérifie la complétude.
+To add a language, complete the dictionary in `src/localize.ts`: the TypeScript
+type requires every key of the reference language (`en`), and a test checks
+completeness.
 
-## Développement
+## Development
 
 ```bash
 npm install
-npm run build     # produit dist/open-firenet-card.js
-npm test          # tests unitaires + tests de rendu (Vitest)
-npm run typecheck # vérification TypeScript
-npm run watch     # build en continu
+npm run build     # produces dist/open-firenet-card.js
+npm test          # unit tests + render tests (Vitest)
+npm run typecheck # TypeScript check
+npm run watch     # continuous build
 ```
 
-Pendant le développement, pointez la ressource Lovelace vers `dist/open-firenet-card.js`.
+During development, point the Lovelace resource at `dist/open-firenet-card.js`.
 
-## Licence
+## License
 
-MIT — voir [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).

@@ -36,11 +36,18 @@ export const cardStyles = css`
   }
 
   /* ---------- collapsible sections ---------- */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .section-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     padding: 0;
     margin: 0;
     background: none;
@@ -50,6 +57,19 @@ export const cardStyles = css`
     cursor: pointer;
     text-align: left;
     justify-content: flex-start;
+  }
+
+  .section-summary {
+    flex: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    white-space: nowrap;
+  }
+
+  .section-summary.clickable:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
   }
 
   .section-toggle:hover {
@@ -133,6 +153,14 @@ export const cardStyles = css`
   .badge.warn {
     background: color-mix(in srgb, var(--warning-color, #ffa600) 20%, transparent);
     color: var(--warning-color, #ffa600);
+  }
+
+  .badge.target {
+    color: var(--warning-color, #ffa000);
+  }
+
+  .badge.clickable:hover {
+    filter: brightness(0.95);
   }
 
   /* ---------- status ---------- */

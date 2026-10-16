@@ -515,6 +515,28 @@ describe('more-info on sensor values', () => {
     expect(events.last()).toBe('climate.open_firenet');
   });
 
+  it('opens the climate modal from a collapsed section summary', async () => {
+    const el = await mount({ expanded_sections: [] });
+    const events = captureMoreInfo(el);
+    const summary = Array.from(
+      el.shadowRoot?.querySelectorAll('.section-summary.clickable') ?? [],
+    ).find((s) => s.textContent?.includes('22')) as HTMLElement;
+    expect(summary).toBeDefined();
+    summary.dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('climate.open_firenet');
+  });
+
+  it('shows the target temperature in the header and opens the climate modal', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    const chip = el.shadowRoot?.querySelector('.badge.target') as HTMLElement;
+    expect(chip).toBeDefined();
+    expect(chip.textContent).toContain('22');
+    expect(chip.textContent).toContain('°C');
+    chip.dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('climate.open_firenet');
+  });
+
   it('opens the maintenance modal from the service bar', async () => {
     const el = await mount({});
     const events = captureMoreInfo(el);
@@ -582,5 +604,49 @@ describe('icon accents', () => {
     const el = await mount({ expanded_sections: ['bridge'] });
     // makeHass RSSI is -58 dBm → "good" → ok tone.
     expect(el.shadowRoot?.querySelector('.bars')?.classList.contains('tone-ok')).toBe(true);
+  });
+});
+
+describe('collapsed section summaries', () => {
+  function headerFor(el: OpenFirenetCard, title: string): HTMLElement | undefined {
+    return Array.from(el.shadowRoot?.querySelectorAll('.section-header') ?? []).find((h) =>
+      h.querySelector('.section-title')?.textContent?.includes(title),
+    ) as HTMLElement | undefined;
+  }
+
+  function summaryFor(el: OpenFirenetCard, title: string): string | undefined {
+    return headerFor(el, title)?.querySelector('.section-summary')?.textContent?.trim();
+  }
+
+  it('keeps the target temperature in the collapsed heating header', async () => {
+    const el = await mount({ expanded_sections: [] });
+    expect(summaryFor(el, 'Chauffage')).toBe('22°C');
+  });
+
+  it('hides the summary while the section is expanded', async () => {
+    // climate, temperatures and consumption are expanded by default.
+    const el = await mount({});
+    expect(headerFor(el, 'Chauffage')?.querySelector('.section-summary')).toBeNull();
+    expect(headerFor(el, 'Températures')?.querySelector('.section-summary')).toBeNull();
+  });
+
+  it('summarises every other collapsed section', async () => {
+    const el = await mount({ expanded_sections: [] });
+    expect(summaryFor(el, 'Températures')).toBe('21,4°C');
+    expect(summaryFor(el, 'Ventilateurs')).toBe('1/1');
+    expect(summaryFor(el, 'Consommation')).toContain('245');
+    expect(summaryFor(el, 'Consommation')).toContain('kg');
+    expect(summaryFor(el, 'Mécanique')).toContain('rpm');
+    expect(summaryFor(el, 'Passerelle')).toContain('dBm');
+    expect(summaryFor(el, 'Planning')).toBe('Activé');
+  });
+
+  it('replaces the summary with the content when expanding', async () => {
+    const el = await mount({ expanded_sections: [] });
+    const toggle = headerFor(el, 'Ventilateurs')?.querySelector('.section-toggle') as HTMLElement;
+    toggle.dispatchEvent(new Event('click'));
+    await el.updateComplete;
+    expect(summaryFor(el, 'Ventilateurs')).toBeUndefined();
+    expect(text(el)).toContain('MultiAir 1');
   });
 });
