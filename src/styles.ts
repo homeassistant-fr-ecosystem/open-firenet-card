@@ -35,6 +35,40 @@ export const cardStyles = css`
     color: var(--secondary-text-color);
   }
 
+  /* ---------- collapsible sections ---------- */
+  .section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  .section-toggle:hover {
+    background: none;
+  }
+
+  .section-toggle .chevron {
+    --mdc-icon-size: 18px;
+    color: var(--secondary-text-color);
+    flex: none;
+    transition: transform 0.15s ease;
+  }
+
+  .section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   /* ---------- header ---------- */
   .header {
     display: flex;
@@ -226,6 +260,32 @@ export const cardStyles = css`
   .tile .caption {
     font-size: 0.74rem;
     color: var(--secondary-text-color);
+  }
+
+  /* ---------- clickable values (open the more-info dialog) ---------- */
+  .clickable {
+    cursor: pointer;
+  }
+
+  .tile.clickable:hover {
+    background: var(--secondary-background-color, rgba(0, 0, 0, 0.08));
+  }
+
+  .state-chip.clickable:hover {
+    filter: brightness(0.96);
+  }
+
+  .temp.clickable:hover .value {
+    text-decoration: underline;
+  }
+
+  .slider-row.clickable:hover .caption {
+    color: var(--primary-text-color);
+  }
+
+  .clickable:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
   }
 
   /* ---------- controls ---------- */

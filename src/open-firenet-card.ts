@@ -4,6 +4,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import './open-firenet-card-editor';
 
 import {
+  DEFAULT_EXPANDED_SECTIONS,
   DEFAULT_SECTIONS,
   DEFAULT_SERVICE_INTERVAL,
   DOMAIN,
@@ -41,6 +42,18 @@ import {
 
 const FAN_ROLES: readonly Role[] = ['multiair_1', 'multiair_2'];
 
+/** Section titles, used by the collapsible headers. */
+const SECTION_TITLE_KEYS: Record<SectionId, TranslationKey> = {
+  status: 'section.status',
+  climate: 'section.climate',
+  temperatures: 'section.temperatures',
+  fans: 'section.fans',
+  consumption: 'section.consumption',
+  mechanics: 'section.mechanics',
+  bridge: 'section.bridge',
+  schedule: 'section.schedule',
+};
+
 @customElement('open-firenet-card')
 export class OpenFirenetCard extends LitElement {
   static override styles = cardStyles;
@@ -51,6 +64,9 @@ export class OpenFirenetCard extends LitElement {
 
   /** Entity states pushed by the `states` context; falls back to `hass.states`. */
   @state() private _states?: HomeAssistant['states'];
+
+  /** User toggles made on the collapsible headers: `true` = expanded. */
+  @state() private _sectionOverrides = new Map<SectionId, boolean>();
 
   private _unsubscribe?: () => void;
 
@@ -143,7 +159,7 @@ export class OpenFirenetCard extends LitElement {
    * the entity/device registries, the language, or (via the context) the states.
    */
   protected override shouldUpdate(changed: PropertyValues): boolean {
-    if (changed.has('_config')) {
+    if (changed.has('_config') || changed.has('_sectionOverrides')) {
       return true;
     }
     if (!this.hass) {
@@ -214,6 +230,24 @@ export class OpenFirenetCard extends LitElement {
     return [...DEFAULT_SECTIONS];
   }
 
+  private get _expandedDefaults(): Set<SectionId> {
+    const configured = this._config.expanded_sections ?? DEFAULT_EXPANDED_SECTIONS;
+    return new Set(
+      configured.filter((s) => (SECTION_IDS as readonly string[]).includes(s)),
+    );
+  }
+
+  /** A section is expanded unless the user toggled it or the config collapsed it. */
+  private _isExpanded(section: SectionId): boolean {
+    return this._sectionOverrides.get(section) ?? this._expandedDefaults.has(section);
+  }
+
+  private _toggleSection(section: SectionId): void {
+    const next = new Map(this._sectionOverrides);
+    next.set(section, !this._isExpanded(section));
+    this._sectionOverrides = next;
+  }
+
   private _entity(role: Role): HassEntity | undefined {
     const id = this.entities[role];
     return id ? this._stateMap[id] : undefined;
@@ -259,6 +293,30 @@ export class OpenFirenetCard extends LitElement {
 
   private _call(domain: string, service: string, data: Record<string, unknown>): void {
     this.hass.callService(domain, service, data);
+  }
+
+  /** Ask the dashboard to open the more-info dialog of an entity. */
+  private _moreInfo(entityId?: string): void {
+    if (!entityId) {
+      return;
+    }
+    this.dispatchEvent(
+      new CustomEvent('hass-more-info', {
+        detail: { entityId },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
+  private _onClickableKey(event: KeyboardEvent, entityId?: string): void {
+    if (!entityId) {
+      return;
+    }
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this._moreInfo(entityId);
+    }
   }
 
   private _setHvac(on: boolean): void {
@@ -337,6 +395,33 @@ export class OpenFirenetCard extends LitElement {
   }
 
   private _renderSection(section: SectionId): TemplateResult | typeof nothing {
+    const body = this._renderSectionBody(section);
+    if (body === nothing) {
+      return nothing;
+    }
+    if (section === 'status') {
+      return html`<div class="section">${body}</div>`;
+    }
+    const expanded = this._isExpanded(section);
+    return html`
+      <div class="section collapsible ${expanded ? 'expanded' : 'collapsed'}">
+        <button
+          class="section-toggle"
+          aria-expanded=${String(expanded)}
+          @click=${() => this._toggleSection(section)}
+        >
+          <ha-icon
+            class="chevron"
+            icon=${expanded ? 'mdi:chevron-down' : 'mdi:chevron-right'}
+          ></ha-icon>
+          <span class="section-title">${this._t(SECTION_TITLE_KEYS[section])}</span>
+        </button>
+        ${expanded ? body : nothing}
+      </div>
+    `;
+  }
+
+  private _renderSectionBody(section: SectionId): TemplateResult | typeof nothing {
     switch (section) {
       case 'status':
         return this._renderStatus();
@@ -420,28 +505,47 @@ export class OpenFirenetCard extends LitElement {
       climate?.attributes.current_temperature ??
       stateNumber(this._entity('room_temperature'));
     const targetTemp = climate?.attributes.temperature ?? null;
+    const ambientEntity = this.entities.room_temperature ?? this.entities.climate;
+    const targetEntity = this.entities.climate;
+    const stateEntityId = this.entities.stove_state;
 
     return html`
-      <div class="section">
-        <div class="status">
-          ${stateEntity
-            ? html`<span class="state-chip tone-${info.tone} ${info.burning ? 'flame' : ''}">
-                <ha-icon icon=${info.icon}></ha-icon>
-                <span class="label">${this._stateLabel(stateEntity, info.labelKey)}</span>
-              </span>`
-            : nothing}
-          <div class="temps">
-            <div class="temp">
-              <span class="value">${formatNumber(currentTemp, 1, this._lang)}°C</span>
-              <span class="caption">${this._t('caption.ambient')}</span>
-            </div>
-            ${targetTemp !== null
-              ? html`<div class="temp">
-                  <span class="value">${formatNumber(targetTemp, 1, this._lang)}°C</span>
-                  <span class="caption">${this._t('caption.target')}</span>
-                </div>`
-              : nothing}
+      <div class="status">
+        ${stateEntity
+          ? html`<span
+              class="state-chip tone-${info.tone} ${info.burning ? 'flame' : ''} clickable"
+              role="button"
+              tabindex="0"
+              @click=${() => this._moreInfo(stateEntityId)}
+              @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, stateEntityId)}
+            >
+              <ha-icon icon=${info.icon}></ha-icon>
+              <span class="label">${this._stateLabel(stateEntity, info.labelKey)}</span>
+            </span>`
+          : nothing}
+        <div class="temps">
+          <div
+            class="temp clickable"
+            role="button"
+            tabindex="0"
+            @click=${() => this._moreInfo(ambientEntity)}
+            @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, ambientEntity)}
+          >
+            <span class="value">${formatNumber(currentTemp, 1, this._lang)}°C</span>
+            <span class="caption">${this._t('caption.ambient')}</span>
           </div>
+          ${targetTemp !== null
+            ? html`<div
+                class="temp clickable"
+                role="button"
+                tabindex="0"
+                @click=${() => this._moreInfo(targetEntity)}
+                @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, targetEntity)}
+              >
+                <span class="value">${formatNumber(targetTemp, 1, this._lang)}°C</span>
+                <span class="caption">${this._t('caption.target')}</span>
+              </div>`
+            : nothing}
         </div>
       </div>
     `;
@@ -459,8 +563,7 @@ export class OpenFirenetCard extends LitElement {
       (climate.attributes.preset_modes as string[] | undefined) ?? ['manual', 'auto', 'comfort'];
 
     return html`
-      <div class="section">
-        <div class="section-title">${this._t('section.climate')}</div>
+      <div class="section-body">
         <div class="row wrap">
           ${this._controls
             ? html`<button class=${on ? '' : 'primary'} @click=${() => this._setHvac(!on)}>
@@ -561,6 +664,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:home-thermometer',
           `${formatNumber(stateNumber(room), 1, this._lang)} °C`,
           this._t('caption.ambient'),
+          this.entities.room_temperature,
         ),
       );
     }
@@ -570,6 +674,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:fire',
           `${formatNumber(stateNumber(combustion), 0, this._lang)} °C`,
           this._t('caption.combustion'),
+          this.entities.combustion_temperature,
         ),
       );
     }
@@ -579,16 +684,14 @@ export class OpenFirenetCard extends LitElement {
           'mdi:chip',
           `${formatNumber(stateNumber(board), 0, this._lang)} °C`,
           this._t('caption.board'),
+          this.entities.board_temperature,
         ),
       );
     }
     if (!tiles.length) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.temperatures')}</div>
-      <div class="tiles">${tiles}</div>
-    </div>`;
+    return html`<div class="tiles">${tiles}</div>`;
   }
 
   private _renderFans(): TemplateResult | typeof nothing {
@@ -598,8 +701,7 @@ export class OpenFirenetCard extends LitElement {
     if (!fans.length) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.fans')}</div>
+    return html`<div class="section-body">
       ${fans.map((f) => this._renderFan(f.role, f.entity as HassEntity))}
     </div>`;
   }
@@ -677,6 +779,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:fire-circle',
           `${formatNumber(stateNumber(pellets), 0, this._lang)} kg`,
           this._t('caption.pellets'),
+          this.entities.pellets_total_kg,
         ),
       );
     }
@@ -686,6 +789,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:clock-outline',
           `${formatNumber(stateNumber(hours), 0, this._lang)} h`,
           this._t('caption.operating_hours'),
+          this.entities.pellet_hours,
         ),
       );
     }
@@ -697,7 +801,14 @@ export class OpenFirenetCard extends LitElement {
       const percent = serviceLevel(remaining, interval);
       const tone = serviceTone(percent);
       serviceBlock = html`
-        <div class="slider-row">
+        <div
+          class="slider-row clickable"
+          role="button"
+          tabindex="0"
+          @click=${() => this._moreInfo(this.entities.service_countdown_kg)}
+          @keydown=${(e: KeyboardEvent) =>
+            this._onClickableKey(e, this.entities.service_countdown_kg)}
+        >
           <div class="progress">
             <span class="${tone === 'ok' ? '' : tone}" style="width: ${percent ?? 0}%"></span>
           </div>
@@ -716,10 +827,8 @@ export class OpenFirenetCard extends LitElement {
     if (!tiles.length && serviceBlock === nothing) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.consumption')}</div>
-      ${tiles.length ? html`<div class="tiles">${tiles}</div>` : nothing}
-      ${serviceBlock}
+    return html`<div class="section-body">
+      ${tiles.length ? html`<div class="tiles">${tiles}</div>` : nothing} ${serviceBlock}
     </div>`;
   }
 
@@ -736,6 +845,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:fan',
           `${formatNumber(stateNumber(draft), 0, this._lang)} rpm`,
           this._t('caption.draft'),
+          this.entities.fan_speed_rpm,
         ),
       );
     }
@@ -745,6 +855,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:screw-machine-flat-top',
           `${formatNumber(stateNumber(auger), 0, this._lang)} rpm`,
           this._t('caption.auger'),
+          this.entities.auger_speed_rpm,
         ),
       );
     }
@@ -759,16 +870,14 @@ export class OpenFirenetCard extends LitElement {
           'mdi:air-filter',
           `${formatNumber(stateNumber(flaps), 0, this._lang)} %`,
           caption,
+          this.entities.air_flaps_percent,
         ),
       );
     }
     if (!tiles.length) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.mechanics')}</div>
-      <div class="tiles">${tiles}</div>
-    </div>`;
+    return html`<div class="tiles">${tiles}</div>`;
   }
 
   private _renderBridge(): TemplateResult | typeof nothing {
@@ -781,7 +890,14 @@ export class OpenFirenetCard extends LitElement {
       const dbm = stateNumber(rssi);
       const quality = rssiQuality(dbm);
       const qualityLabel = this._t(quality.key);
-      tiles.push(html`<div class="tile">
+      const rssiId = this.entities.wifi_rssi;
+      tiles.push(html`<div
+        class="tile clickable"
+        role="button"
+        tabindex="0"
+        @click=${() => this._moreInfo(rssiId)}
+        @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, rssiId)}
+      >
         <span class="bars" title="${qualityLabel}">
           ${[1, 2, 3, 4].map((n) => html`<i class="${n <= quality.level ? 'on' : ''}"></i>`)}
         </span>
@@ -797,6 +913,7 @@ export class OpenFirenetCard extends LitElement {
           'mdi:timer-outline',
           formatDuration(stateNumber(uptime), DURATION_UNITS[this._lang]),
           this._t('caption.uptime'),
+          this.entities.uptime_seconds,
         ),
       );
     }
@@ -806,16 +923,14 @@ export class OpenFirenetCard extends LitElement {
           isOn(connected) ? 'mdi:lan-connect' : 'mdi:lan-disconnect',
           this._t(isOn(connected) ? 'badge.connected' : 'badge.offline'),
           this._t('caption.link'),
+          this.entities.connected,
         ),
       );
     }
     if (!tiles.length) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.bridge')}</div>
-      <div class="tiles">${tiles}</div>
-    </div>`;
+    return html`<div class="tiles">${tiles}</div>`;
   }
 
   private _renderSchedule(): TemplateResult | typeof nothing {
@@ -824,12 +939,9 @@ export class OpenFirenetCard extends LitElement {
     if (!schedule && !frost) {
       return nothing;
     }
-    return html`<div class="section">
-      <div class="section-title">${this._t('section.schedule')}</div>
-      <div class="tiles">
-        ${this._renderSwitchRow('heating_schedule', 'switch.heating_schedule', 'mdi:calendar-clock')}
-        ${this._renderSwitchRow('frost_protection', 'switch.frost_protection', 'mdi:snowflake')}
-      </div>
+    return html`<div class="tiles">
+      ${this._renderSwitchRow('heating_schedule', 'switch.heating_schedule', 'mdi:calendar-clock')}
+      ${this._renderSwitchRow('frost_protection', 'switch.frost_protection', 'mdi:snowflake')}
     </div>`;
   }
 
@@ -858,8 +970,19 @@ export class OpenFirenetCard extends LitElement {
     </div>`;
   }
 
-  private _tile(icon: string, value: string, caption: string): TemplateResult {
-    return html`<div class="tile">
+  private _tile(
+    icon: string,
+    value: string,
+    caption: string,
+    entityId?: string,
+  ): TemplateResult {
+    return html`<div
+      class="tile ${entityId ? 'clickable' : ''}"
+      role=${entityId ? 'button' : nothing}
+      tabindex=${entityId ? '0' : nothing}
+      @click=${entityId ? () => this._moreInfo(entityId) : nothing}
+      @keydown=${entityId ? (e: KeyboardEvent) => this._onClickableKey(e, entityId) : nothing}
+    >
       <ha-icon icon=${icon}></ha-icon>
       <div class="body">
         <span class="value">${value}</span>

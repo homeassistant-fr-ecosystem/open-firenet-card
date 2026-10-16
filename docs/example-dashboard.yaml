@@ -15,7 +15,9 @@ views:
         entity: climate.open_firenet
         title: Poêle à granulés
 
-      # Vue synthétique en lecture seule
+      # Vue synthétique en lecture seule.
+      # `expanded_sections` choisit les sections dépliées au démarrage ;
+      # les autres n'affichent que leur en-tête (cliquable pour déplier).
       - type: custom:open-firenet-card
         entity: climate.open_firenet
         title: Résumé
@@ -25,6 +27,9 @@ views:
           - temperatures
           - consumption
           - bridge
+        expanded_sections:
+          - temperatures
+          - consumption
 
       # Exemple de surcharge explicite d'une entité (si le renommage automatique échoue)
       - type: custom:open-firenet-card

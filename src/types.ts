@@ -81,6 +81,11 @@ export const SECTION_IDS = [
 
 export type SectionId = (typeof SECTION_IDS)[number];
 
+/** Sections that can be collapsed; `status` is always visible. */
+export const COLLAPSIBLE_SECTIONS = SECTION_IDS.filter(
+  (id): id is Exclude<SectionId, 'status'> => id !== 'status',
+);
+
 /**
  * Card configuration.
  *
@@ -94,6 +99,8 @@ export interface OpenFirenetCardConfig {
   title?: string;
   show_controls?: boolean;
   sections?: SectionId[];
+  /** Sections that start expanded; the others start collapsed. */
+  expanded_sections?: SectionId[];
   /** Force a display language instead of following the Home Assistant locale. */
   language?: string;
   /** Maintenance interval in kg, used to draw the service countdown bar. */

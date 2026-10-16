@@ -17,6 +17,13 @@ l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
 
 - **Statut en un coup d'œil** : état du poêle traduit (chauffe, veille, nettoyage…),
   flamme animée, température ambiante et consigne.
+- **Sections repliables** : seules les sections essentielles (Chauffage,
+  Températures, Consommation) sont dépliées au démarrage ; cliquez sur l'en-tête
+  d'une section pour la déplier ou la replier. Les sections importantes restent
+  visibles, le reste est à portée de clic.
+- **Détails au clic** : cliquez sur une valeur (températures, consommation,
+  mécanique, passerelle), le statut ou la barre d'entretien pour ouvrir la boîte
+  de dialogue de l'entité correspondante dans Home Assistant.
 - **Contrôle** (désactivable) : marche/arrêt, consigne ±, mode (Manuel / Auto /
   Confort), puissance de chauffe, ventilateurs MultiAir et leurs trims.
 - **Découverte automatique** : à partir d'une seule entité ancre, la carte
@@ -64,6 +71,7 @@ title: Poêle à granulés
 | `title` | `string` | nom de l'appareil | Titre affiché en haut de la carte. |
 | `show_controls` | `bool` | `true` | Affiche les commandes. `false` = carte en lecture seule. |
 | `sections` | `string[]` | toutes | Ordre et visibilité des sections (voir ci-dessous). |
+| `expanded_sections` | `string[]` | `climate`, `temperatures`, `consumption` | Sections dépliées au démarrage. Les autres démarrent repliées (en-tête cliquable). `[]` = tout replié. |
 | `service_interval` | `number` | `1500` | Intervalle d'entretien en kg, pour la barre de la section « Entretien ». |
 | `language` | `string` | locale HA | Force la langue de la carte (`en`, `fr`). Sinon suit la locale de Home Assistant, avec repli sur l'anglais. |
 | *(rôle)* | `string` | auto | N'importe quel rôle ci-dessous peut recevoir un `entity_id` explicite pour forcer la source. |
@@ -81,6 +89,11 @@ title: Poêle à granulés
 | `bridge` | Wi-Fi (RSSI), uptime, liaison poêle |
 | `schedule` | Chauffage programmé, protection hors-gel |
 
+La section **`status`** est toujours visible. Toutes les autres sont **repliables** :
+seules celles listées dans `expanded_sections` sont dépliées au démarrage, les
+autres n'affichent que leur en-tête. Un clic sur l'en-tête déplie/replie la
+section (même en lecture seule, `show_controls: false`).
+
 Exemple en lecture seule, trois sections :
 
 ```yaml
@@ -89,6 +102,9 @@ entity: climate.open_firenet
 show_controls: false
 sections:
   - status
+  - temperatures
+  - consumption
+expanded_sections:
   - temperatures
   - consumption
 ```

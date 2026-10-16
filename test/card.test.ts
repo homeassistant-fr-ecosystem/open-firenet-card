@@ -398,3 +398,151 @@ describe('states context (P4)', () => {
     expect(unsubscribed).toBe(true);
   });
 });
+
+describe('collapsible sections', () => {
+  function toggleFor(el: OpenFirenetCard, title: string): HTMLButtonElement {
+    const button = Array.from(el.shadowRoot?.querySelectorAll('.section-toggle') ?? []).find((b) =>
+      b.textContent?.includes(title),
+    );
+    expect(button, `toggle for "${title}"`).toBeDefined();
+    return button as HTMLButtonElement;
+  }
+
+  it('expands the main sections and collapses the secondary ones by default', async () => {
+    const el = await mount({});
+    const root = el.shadowRoot!;
+
+    // Headers of collapsed sections are still shown…
+    expect(text(el)).toContain('Ventilateurs');
+    expect(text(el)).toContain('Mécanique');
+    expect(text(el)).toContain('Passerelle');
+    expect(text(el)).toContain('Planning');
+    // …but their content is not rendered.
+    expect(text(el)).not.toContain('MultiAir 1');
+    expect(text(el)).not.toContain('Tirage');
+
+    // The main sections are open.
+    expect(text(el)).toContain('Puissance'); // climate body
+    expect(root.querySelector('.section.collapsed')).not.toBeNull();
+    expect(root.querySelectorAll('.section.expanded').length).toBeGreaterThan(0);
+  });
+
+  it('expands a collapsed section when its header is clicked', async () => {
+    const el = await mount({});
+    expect(text(el)).not.toContain('MultiAir 1');
+
+    toggleFor(el, 'Ventilateurs').dispatchEvent(new Event('click'));
+    await el.updateComplete;
+
+    expect(text(el)).toContain('MultiAir 1');
+  });
+
+  it('collapses an expanded section when its header is clicked again', async () => {
+    const el = await mount({});
+    expect(text(el)).toContain('Puissance');
+
+    toggleFor(el, 'Chauffage').dispatchEvent(new Event('click'));
+    await el.updateComplete;
+
+    expect(text(el)).not.toContain('Puissance');
+    // The header remains visible.
+    expect(text(el)).toContain('Chauffage');
+  });
+
+  it('honours expanded_sections from the configuration', async () => {
+    const el = await mount({ expanded_sections: ['fans'] });
+    expect(text(el)).toContain('MultiAir 1'); // fans expanded
+    expect(text(el)).not.toContain('Puissance'); // climate collapsed
+  });
+
+  it('collapses every section when expanded_sections is empty', async () => {
+    const el = await mount({ expanded_sections: [] });
+    expect(el.shadowRoot?.querySelectorAll('.section.collapsed').length).toBe(7);
+    expect(el.shadowRoot?.querySelectorAll('.section.expanded').length).toBe(0);
+  });
+
+  it('keeps sections toggleable in read-only mode', async () => {
+    const el = await mount({ show_controls: false });
+    toggleFor(el, 'Ventilateurs').dispatchEvent(new Event('click'));
+    await el.updateComplete;
+    expect(text(el)).toContain('MultiAir 1');
+  });
+});
+
+describe('more-info on sensor values', () => {
+  function captureMoreInfo(el: OpenFirenetCard): { last: () => string | undefined } {
+    let entityId: string | undefined;
+    el.addEventListener('hass-more-info', (ev) => {
+      entityId = (ev as CustomEvent<{ entityId: string }>).detail.entityId;
+    });
+    return { last: () => entityId };
+  }
+
+  function clickableFor(el: OpenFirenetCard, label: string): HTMLElement {
+    const tile = Array.from(el.shadowRoot?.querySelectorAll('.clickable') ?? []).find((t) =>
+      t.textContent?.includes(label),
+    );
+    expect(tile, `clickable "${label}"`).toBeDefined();
+    return tile as HTMLElement;
+  }
+
+  it('opens the modal of a temperature sensor tile', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    clickableFor(el, 'Chambre de combustion').dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('sensor.open_firenet_combustion_chamber_temperature');
+  });
+
+  it('opens the stove-state modal from the status chip', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    (el.shadowRoot?.querySelector('.state-chip') as HTMLElement).dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('sensor.open_firenet_stove_state');
+  });
+
+  it('opens the climate modal from the target temperature', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    const target = Array.from(el.shadowRoot?.querySelectorAll('.temp.clickable') ?? []).find((t) =>
+      t.textContent?.includes('Consigne'),
+    ) as HTMLElement;
+    target.dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('climate.open_firenet');
+  });
+
+  it('opens the maintenance modal from the service bar', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    (el.shadowRoot?.querySelector('.slider-row.clickable') as HTMLElement).dispatchEvent(
+      new Event('click'),
+    );
+    expect(events.last()).toBe('sensor.open_firenet_service_countdown');
+  });
+
+  it('supports keyboard activation (Enter / Space)', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    const tile = clickableFor(el, 'Granulés consommés');
+    tile.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(events.last()).toBe('sensor.open_firenet_pellets_consumed');
+    tile.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+    expect(events.last()).toBe('sensor.open_firenet_pellets_consumed');
+  });
+
+  it('leaves the schedule rows non-clickable', async () => {
+    const el = await mount({ expanded_sections: ['schedule'] });
+    const events = captureMoreInfo(el);
+    expect(text(el)).toContain('Chauffage programmé');
+
+    const clickable = Array.from(el.shadowRoot?.querySelectorAll('.clickable') ?? []).find((t) =>
+      t.textContent?.includes('Chauffage programmé'),
+    );
+    expect(clickable).toBeUndefined();
+
+    const tile = Array.from(el.shadowRoot?.querySelectorAll('.tile') ?? []).find((t) =>
+      t.textContent?.includes('Chauffage programmé'),
+    ) as HTMLElement;
+    tile.dispatchEvent(new Event('click'));
+    expect(events.last()).toBeUndefined();
+  });
+});

@@ -100,6 +100,9 @@ const en = {
   'editor.section.mechanics': 'Mechanics (draft, auger, flaps)',
   'editor.section.bridge': 'Bridge (Wi-Fi, uptime, link)',
   'editor.section.schedule': 'Schedule & frost protection',
+  'editor.expanded_sections': 'Expanded by default',
+  'editor.expanded_sections_hint':
+    'The other sections start collapsed; click a section header to expand it.',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -199,6 +202,9 @@ const fr: Record<TranslationKey, string> = {
   'editor.section.mechanics': 'Mécanique (tirage, vis, volets)',
   'editor.section.bridge': 'Passerelle (Wi-Fi, uptime, liaison)',
   'editor.section.schedule': 'Planning & protection hors-gel',
+  'editor.expanded_sections': 'Ouvertes par défaut',
+  'editor.expanded_sections_hint':
+    "Les autres sections sont repliées ; cliquez sur l'en-tête d'une section pour la déplier.",
 };
 
 export const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;

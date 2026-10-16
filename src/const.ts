@@ -5,6 +5,13 @@ export const DOMAIN = 'open_firenet';
 
 export const DEFAULT_SECTIONS: readonly SectionId[] = SECTION_IDS;
 
+/** Sections expanded when the config does not set `expanded_sections`. */
+export const DEFAULT_EXPANDED_SECTIONS: readonly SectionId[] = [
+  'climate',
+  'temperatures',
+  'consumption',
+];
+
 /** Maintenance interval used when the config does not set `service_interval`. */
 export const DEFAULT_SERVICE_INTERVAL = 1500;
 

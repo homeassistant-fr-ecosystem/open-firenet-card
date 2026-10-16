@@ -1,9 +1,10 @@
 import { LitElement, css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-import { DOMAIN } from './const';
+import { DEFAULT_EXPANDED_SECTIONS, DOMAIN } from './const';
 import { localize, pickLanguage, type SupportedLanguage, type TranslationKey } from './localize';
 import {
+  COLLAPSIBLE_SECTIONS,
   SECTION_IDS,
   type HomeAssistant,
   type OpenFirenetCardConfig,
@@ -149,6 +150,19 @@ export class OpenFirenetCardEditor extends LitElement {
     this._update({ sections: next });
   }
 
+  private get _expandedSections(): SectionId[] {
+    const configured = this._config?.expanded_sections;
+    return configured ? configured : [...DEFAULT_EXPANDED_SECTIONS];
+  }
+
+  private _toggleExpanded(id: SectionId, checked: boolean): void {
+    const current = this._expandedSections;
+    const next = checked
+      ? [...new Set([...current, id])]
+      : current.filter((section) => section !== id);
+    this._update({ expanded_sections: next });
+  }
+
   protected override render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -210,6 +224,23 @@ export class OpenFirenetCardEditor extends LitElement {
               <label for=${`section-${id}`}>${this._t(SECTION_LABEL_KEYS[id])}</label>
             </div>`,
           )}
+        </div>
+
+        <div class="field">
+          <label class="title">${this._t('editor.expanded_sections')}</label>
+          ${COLLAPSIBLE_SECTIONS.map(
+            (id) => html`<div class="checkbox-row">
+              <input
+                id=${`expanded-${id}`}
+                type="checkbox"
+                .checked=${this._expandedSections.includes(id)}
+                @change=${(ev: Event) =>
+                  this._toggleExpanded(id, (ev.target as HTMLInputElement).checked)}
+              />
+              <label for=${`expanded-${id}`}>${this._t(SECTION_LABEL_KEYS[id])}</label>
+            </div>`,
+          )}
+          <span class="hint">${this._t('editor.expanded_sections_hint')}</span>
         </div>
       </div>
     `;

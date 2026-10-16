@@ -99,4 +99,31 @@ describe('open-firenet-card-editor', () => {
 
     expect(received?.entity).toBe('climate.other');
   });
+
+  it('offers expanded-by-default checkboxes reflecting the config', async () => {
+    const el = await mountEditor();
+    expect(el.shadowRoot?.querySelector('#expanded-climate')).not.toBeNull();
+    // `status` is always visible, so it is not offered as a collapsible section.
+    expect(el.shadowRoot?.querySelector('#expanded-status')).toBeNull();
+
+    const climate = el.shadowRoot?.querySelector('#expanded-climate') as HTMLInputElement;
+    const fans = el.shadowRoot?.querySelector('#expanded-fans') as HTMLInputElement;
+    expect(climate.checked).toBe(true); // default
+    expect(fans.checked).toBe(false); // default
+  });
+
+  it('fires config-changed with expanded_sections when a section is toggled', async () => {
+    const el = await mountEditor();
+    let received: Record<string, unknown> | undefined;
+    el.addEventListener('config-changed', (ev) => {
+      received = (ev as CustomEvent).detail.config;
+    });
+
+    const fans = el.shadowRoot?.querySelector('#expanded-fans') as HTMLInputElement;
+    fans.checked = true;
+    fans.dispatchEvent(new Event('change'));
+
+    expect(received?.expanded_sections).toContain('fans');
+    expect(received?.expanded_sections).toContain('climate'); // defaults preserved
+  });
 });
