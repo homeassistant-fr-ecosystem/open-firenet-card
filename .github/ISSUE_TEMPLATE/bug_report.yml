@@ -1,0 +1,62 @@
+name: Bug report
+description: Something on the card does not work as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report! The card version is printed in the
+        browser console on load — look for `OPEN-FIRENET-CARD`.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happens?
+      description: What you see, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Card configuration
+      description: The YAML of the card (from the dashboard's raw editor).
+      render: yaml
+    validations:
+      required: true
+  - type: input
+    id: card-version
+    attributes:
+      label: Card version
+      description: From the browser console (`OPEN-FIRENET-CARD v…`), or the release tag.
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: input
+    id: ha-version
+    attributes:
+      label: Home Assistant version
+      placeholder: 2026.10.0
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Firefox 142, Chrome 128, Home Assistant companion app…
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console errors
+      description: Any error shown in the browser console (F12), if there is one.
+      render: text
+    validations:
+      required: false
+  - type: input
+    id: stove
+    attributes:
+      label: Stove model and firmware
+      description: If relevant (a missing value, a wrong label…).
+    validations:
+      required: false

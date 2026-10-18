@@ -10,6 +10,7 @@ import {
   DOMAIN,
   FAN_PRESETS,
   PRESET_KEYS,
+  VERSION,
 } from './const';
 import { discoverEntities, findAnchorEntity, type DiscoveredEntities, type Role } from './entities';
 import {
@@ -135,7 +136,16 @@ export class OpenFirenetCard extends LitElement {
   }
 
   public getCardSize(): number {
-    return 9;
+    if (!this._config) {
+      return 6;
+    }
+    // Rough Lovelace height: the header, then a tall body per expanded section
+    // and a single header line per collapsed one.
+    let size = 2;
+    for (const section of this._sections) {
+      size += section === 'status' || this._isExpanded(section) ? 3 : 1;
+    }
+    return size;
   }
 
   /** Size in the sections view grid (columns; rows follow the content). */
@@ -243,6 +253,12 @@ export class OpenFirenetCard extends LitElement {
 
   private get _controls(): boolean {
     return this._config.show_controls !== false;
+  }
+
+  /** Maintenance interval in kg, falling back to the default when unusable. */
+  private _serviceInterval(): number {
+    const configured = Number(this._config.service_interval);
+    return Number.isFinite(configured) && configured > 0 ? configured : DEFAULT_SERVICE_INTERVAL;
   }
 
   private get _sections(): SectionId[] {
@@ -404,17 +420,35 @@ export class OpenFirenetCard extends LitElement {
     if (!this.hass || !this._config) {
       return nothing;
     }
-    const anchor = findAnchorEntity(this.hass, this._config);
+    const error = this._renderError();
     return html`
       <ha-card>
         <div class="card">
           ${this._renderHeader()}
-          ${anchor
-            ? this._sections.map((section) => this._renderSection(section))
-            : html`<div class="error-text">${this._t('error.no_entities')}</div>`}
+          ${error ?? this._sections.map((section) => this._renderSection(section))}
         </div>
       </ha-card>
     `;
+  }
+
+  /**
+   * Explain why the card is empty instead of showing a bare header: either the
+   * configured `entity` does not exist, or no Open Firenet entity was found at
+   * all (integration missing, or nothing to auto-discover from).
+   */
+  private _renderError(): TemplateResult | null {
+    const configured = this._config.entity;
+    if (configured && !this.hass.states[configured] && !this.hass.entities?.[configured]) {
+      return html`<div class="error-text">
+        ${this._t('error.entity_not_found', { entity: configured })}
+      </div>`;
+    }
+    const anchor = findAnchorEntity(this.hass, this._config);
+    const anchorExists = !!anchor && (!!this.hass.states[anchor] || !!this.hass.entities?.[anchor]);
+    if (!anchorExists && Object.keys(this.entities).length === 0) {
+      return html`<div class="error-text">${this._t('error.no_entities')}</div>`;
+    }
+    return null;
   }
 
   private _renderSection(section: SectionId): TemplateResult | typeof nothing {
@@ -700,14 +734,22 @@ export class OpenFirenetCard extends LitElement {
               >`}
           <div class="temp-adjust">
             ${this._controls
-              ? html`<button class="icon" @click=${() => this._adjustTemp(-1)}>
-                  <ha-icon icon="mdi:minus"></ha-icon>
+              ? html`<button
+                  class="icon"
+                  aria-label=${this._t('aria.decrease_target')}
+                  @click=${() => this._adjustTemp(-1)}
+                >
+                  <ha-icon icon="mdi:minus" aria-hidden="true"></ha-icon>
                 </button>`
               : nothing}
             <span class="consigne">${formatNumber(target, 1, this._lang)}°C</span>
             ${this._controls
-              ? html`<button class="icon" @click=${() => this._adjustTemp(1)}>
-                  <ha-icon icon="mdi:plus"></ha-icon>
+              ? html`<button
+                  class="icon"
+                  aria-label=${this._t('aria.increase_target')}
+                  @click=${() => this._adjustTemp(1)}
+                >
+                  <ha-icon icon="mdi:plus" aria-hidden="true"></ha-icon>
                 </button>`
               : nothing}
           </div>
@@ -848,8 +890,17 @@ export class OpenFirenetCard extends LitElement {
           <span class="name">${this._entityName(entity, role)}</span>
           <span class="spacer"></span>
           ${this._controls
-            ? html`<button class="icon" @click=${() => this._toggleFan(role, !on)}>
-                <ha-icon icon=${on ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'}></ha-icon>
+            ? html`<button
+                class="icon"
+                aria-label=${`${this._entityName(entity, role)} — ${this._t(
+                  on ? 'aria.disable' : 'aria.enable',
+                )}`}
+                @click=${() => this._toggleFan(role, !on)}
+              >
+                <ha-icon
+                  icon=${on ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'}
+                  aria-hidden="true"
+                ></ha-icon>
               </button>`
             : html`<span class="muted"
                 >${this._t(on ? 'caption.fan_on' : 'caption.fan_off')}</span
@@ -927,7 +978,7 @@ export class OpenFirenetCard extends LitElement {
     let serviceBlock: TemplateResult | typeof nothing = nothing;
     if (isAvailable(service)) {
       const remaining = stateNumber(service);
-      const interval = Number(this._config.service_interval ?? DEFAULT_SERVICE_INTERVAL);
+      const interval = this._serviceInterval();
       const percent = serviceLevel(remaining, interval);
       const tone = serviceTone(percent);
       serviceBlock = html`
@@ -1032,7 +1083,7 @@ export class OpenFirenetCard extends LitElement {
         @click=${() => this._moreInfo(rssiId)}
         @keydown=${(e: KeyboardEvent) => this._onClickableKey(e, rssiId)}
       >
-        <span class="bars tone-${qualityTone}" title="${qualityLabel}">
+        <span class="bars tone-${qualityTone}" title="${qualityLabel}" aria-hidden="true">
           ${[1, 2, 3, 4].map((n) => html`<i class="${n <= quality.level ? 'on' : ''}"></i>`)}
         </span>
         <div class="body">
@@ -1111,8 +1162,16 @@ export class OpenFirenetCard extends LitElement {
         >
       </div>
       <span class="spacer"></span>
-      <button class="icon" ?disabled=${!this._controls} @click=${() => this._toggleSwitch(role, !on)}>
-        <ha-icon icon=${on ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'}></ha-icon>
+      <button
+        class="icon"
+        aria-label=${`${this._t(labelKey)} — ${this._t(on ? 'aria.disable' : 'aria.enable')}`}
+        ?disabled=${!this._controls}
+        @click=${() => this._toggleSwitch(role, !on)}
+      >
+        <ha-icon
+          icon=${on ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline'}
+          aria-hidden="true"
+        ></ha-icon>
       </button>
     </div>`;
   }
@@ -1174,3 +1233,12 @@ window.customCards.push({
     return { config: { type: 'custom:open-firenet-card', entity: entityId } };
   },
 });
+
+// Version banner: makes it obvious in the browser console which build is loaded
+// when a user reports an issue.
+// eslint-disable-next-line no-console
+console.info(
+  `%c OPEN-FIRENET-CARD %c v${VERSION} `,
+  'color:#fff;background:#ff6d00;font-weight:700;border-radius:4px 0 0 4px;',
+  'color:#ff6d00;background:transparent;font-weight:700;border-radius:0 4px 4px 0;',
+);

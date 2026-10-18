@@ -15,6 +15,13 @@ et, en option, permet de le contrôler.
 Une seule carte regroupe le statut du poêle, les températures, la consommation,
 l'entretien, les ventilateurs MultiAir, la mécanique et la passerelle.
 
+<p align="center">
+  <img src="../images/card-preview.svg" alt="Illustration schématique de la carte Open Firenet" width="380">
+</p>
+
+*Illustration schématique, pas une capture d'écran : la carte suit le thème et la
+langue de votre Home Assistant.*
+
 ## Fonctionnalités
 
 - **Statut en un coup d'œil** : état du poêle traduit (chauffe, veille, nettoyage…),

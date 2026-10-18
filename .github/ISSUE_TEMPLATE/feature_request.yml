@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest an improvement or a new option for the card
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the need, not only the solution you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to see?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+    validations:
+      required: false
+  - type: input
+    id: stove
+    attributes:
+      label: Stove model and firmware
+      description: If the request is about a value only some stoves provide.
+    validations:
+      required: false

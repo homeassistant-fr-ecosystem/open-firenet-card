@@ -548,4 +548,17 @@ export const cardStyles = css`
     color: var(--error-color, #db4437);
     font-size: 0.9rem;
   }
+
+  /* Honour the OS "reduce motion" preference: keep the layout, drop the loops. */
+  @media (prefers-reduced-motion: reduce) {
+    .flame ha-icon,
+    .spin ha-icon {
+      animation: none;
+    }
+
+    .section-toggle .chevron,
+    .progress > span {
+      transition: none;
+    }
+  }
 `;

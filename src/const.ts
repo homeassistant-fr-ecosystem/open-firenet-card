@@ -3,6 +3,9 @@ import { SECTION_IDS, type SectionId } from './types';
 
 export const DOMAIN = 'open_firenet';
 
+/** Card version, kept in sync with `package.json` (checked by `test/version.test.ts`). */
+export const VERSION = '0.1.0';
+
 export const DEFAULT_SECTIONS: readonly SectionId[] = SECTION_IDS;
 
 /** Sections expanded when the config does not set `expanded_sections`. */

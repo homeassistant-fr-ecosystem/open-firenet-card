@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation and help
+    url: https://github.com/openfirenet/open-firenet-card#readme
+    about: Installation, options and troubleshooting.
+  - name: Open Firenet bridge / integration
+    url: https://github.com/openfirenet/open-firenet
+    about: For problems with the bridge, the firmware or the Home Assistant integration itself.

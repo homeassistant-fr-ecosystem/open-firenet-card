@@ -10,6 +10,8 @@ const en = {
   'error.config_missing': 'open-firenet-card: configuration is missing',
   'error.no_entities':
     'No Open Firenet entity found. Make sure the integration is installed, or set the "entity" option.',
+  'error.entity_not_found':
+    'Entity "{entity}" was not found. Check the "entity" option of the card.',
 
   'badge.connected': 'Connected',
   'badge.offline': 'Offline',
@@ -54,6 +56,11 @@ const en = {
 
   'button.start': 'Start',
   'button.stop': 'Stop',
+
+  'aria.enable': 'Enable',
+  'aria.disable': 'Disable',
+  'aria.decrease_target': 'Decrease the target temperature',
+  'aria.increase_target': 'Increase the target temperature',
 
   'switch.heating_schedule': 'Heating schedule',
   'switch.frost_protection': 'Frost protection',
@@ -112,6 +119,8 @@ const fr: Record<TranslationKey, string> = {
   'error.config_missing': 'open-firenet-card : configuration manquante',
   'error.no_entities':
     "Aucune entité Open Firenet trouvée. Vérifiez que l'intégration est installée ou renseignez l'option « entity ».",
+  'error.entity_not_found':
+    "L'entité « {entity} » est introuvable. Vérifiez l'option « entity » de la carte.",
 
   'badge.connected': 'Connecté',
   'badge.offline': 'Hors ligne',
@@ -156,6 +165,11 @@ const fr: Record<TranslationKey, string> = {
 
   'button.start': 'Démarrer',
   'button.stop': 'Arrêter',
+
+  'aria.enable': 'Activer',
+  'aria.disable': 'Désactiver',
+  'aria.decrease_target': 'Diminuer la consigne',
+  'aria.increase_target': 'Augmenter la consigne',
 
   'switch.heating_schedule': 'Chauffage programmé',
   'switch.frost_protection': 'Hors-gel',

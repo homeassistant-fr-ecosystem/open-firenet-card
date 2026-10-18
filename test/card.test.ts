@@ -242,6 +242,18 @@ describe('card conformance to the Lovelace API', () => {
     expect(options.min_columns).toBe(6);
   });
 
+  it('sizes the card from the visible sections', () => {
+    const card = new OpenFirenetCard();
+    expect(card.getCardSize()).toBe(6); // no config yet
+    card.setConfig({
+      entity: 'climate.open_firenet',
+      sections: ['status', 'climate'],
+      expanded_sections: ['climate'],
+    });
+    // header (2) + status (3) + expanded climate (3)
+    expect(card.getCardSize()).toBe(8);
+  });
+
   it('builds a stub config from the open_firenet entities', () => {
     const config = OpenFirenetCard.getStubConfig(
       makeHass(),
@@ -637,5 +649,72 @@ describe('collapsed section summaries', () => {
     await el.updateComplete;
     expect(summaryFor(el, 'Ventilateurs')).toBeUndefined();
     expect(text(el)).toContain('MultiAir 1');
+  });
+});
+
+describe('accessibility', () => {
+  it('gives the icon-only temperature buttons an accessible name', async () => {
+    const el = await mount({ sections: ['climate'] });
+    const buttons = el.shadowRoot?.querySelectorAll('.temp-adjust button.icon') ?? [];
+    expect(buttons).toHaveLength(2);
+    expect(buttons[0].getAttribute('aria-label')).toBe('Diminuer la consigne');
+    expect(buttons[1].getAttribute('aria-label')).toBe('Augmenter la consigne');
+    // The glyph itself is decorative, so it must not leak into the name.
+    expect(buttons[0].querySelector('ha-icon')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('names the fan toggle with the fan and the action', async () => {
+    const el = await mount({ sections: ['fans'], expanded_sections: ['fans'] });
+    const button = el.shadowRoot?.querySelector('.fan button.icon');
+    expect(button?.getAttribute('aria-label')).toContain('MultiAir 1');
+    expect(button?.getAttribute('aria-label')).toContain('Désactiver'); // the fan is on
+  });
+
+  it('names the schedule switches', async () => {
+    const el = await mount({ sections: ['schedule'], expanded_sections: ['schedule'] });
+    const buttons = el.shadowRoot?.querySelectorAll('.tile button.icon') ?? [];
+    expect(buttons[0].getAttribute('aria-label')).toBe('Chauffage programmé — Désactiver');
+    expect(buttons[1].getAttribute('aria-label')).toBe('Hors-gel — Activer');
+  });
+
+  it('hides the decorative wifi bars from assistive tech', async () => {
+    const el = await mount({ sections: ['bridge'], expanded_sections: ['bridge'] });
+    expect(el.shadowRoot?.querySelector('.bars')?.getAttribute('aria-hidden')).toBe('true');
+  });
+});
+
+describe('error handling', () => {
+  it('explains a configured anchor entity that does not exist', async () => {
+    const el = await mount({ entity: 'climate.does_not_exist' });
+    expect(text(el)).toContain('climate.does_not_exist');
+    expect(text(el)).toContain('introuvable');
+  });
+
+  it('explains when no Open Firenet entity is found', async () => {
+    const el = document.createElement('open-firenet-card') as OpenFirenetCard;
+    el.setConfig({});
+    el.hass = {
+      states: {},
+      entities: {},
+      devices: {},
+      language: 'fr',
+      callService: async () => undefined,
+    };
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(text(el)).toContain('Aucune entité Open Firenet');
+  });
+
+  it('falls back to a sane interval instead of rendering NaN%', async () => {
+    const el = await mount({
+      sections: ['consumption'],
+      expanded_sections: ['consumption'],
+      service_interval: 'abc',
+    });
+    const style =
+      (el.shadowRoot?.querySelector('.progress > span') as HTMLElement | null)?.getAttribute(
+        'style',
+      ) ?? '';
+    expect(style).not.toContain('NaN');
   });
 });

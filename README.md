@@ -16,6 +16,13 @@ lets you control it.
 A single card gathers the stove status, temperatures, consumption, maintenance,
 MultiAir fans, mechanics and the bridge.
 
+<p align="center">
+  <img src="docs/images/card-preview.svg" alt="Schematic illustration of the Open Firenet Card" width="380">
+</p>
+
+*Schematic illustration, not a screenshot: the card follows your Home Assistant
+theme and language.*
+
 ## Features
 
 - **Status at a glance**: translated stove state (heating, standby, cleaning…),
@@ -150,7 +157,8 @@ language: en
 
 To add a language, complete the dictionary in `src/localize.ts`: the TypeScript
 type requires every key of the reference language (`en`), and a test checks
-completeness.
+completeness. The step-by-step guide is in
+[`docs/TRANSLATING.md`](docs/TRANSLATING.md).
 
 ## Development
 
@@ -159,10 +167,14 @@ npm install
 npm run build     # produces dist/open-firenet-card.js
 npm test          # unit tests + render tests (Vitest)
 npm run typecheck # TypeScript check
+npm run lint      # ESLint (src and test)
 npm run watch     # continuous build
 ```
 
 During development, point the Lovelace resource at `dist/open-firenet-card.js`.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow, and
+[`CHANGELOG.md`](CHANGELOG.md) for the history.
 
 ## License
 
