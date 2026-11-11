@@ -221,12 +221,122 @@ const fr: Record<TranslationKey, string> = {
     "Les autres sections sont repliées ; cliquez sur l'en-tête d'une section pour la déplier.",
 };
 
-export const SUPPORTED_LANGUAGES = ['en', 'fr'] as const;
+const es: Record<TranslationKey, string> = {
+  "card.default_title": "Estufa de Pellets",
+  "error.config_missing": "open-firenet-card: configuración faltante",
+  "error.no_entities":
+    "No se ha encontrado ninguna entidad Open Firenet. Compruebe que la integración esté instalada o configure la opción « entity ».",
+  "error.entity_not_found":
+    "La entidad « {entity} » no se encuentra. Compruebe la opción « entity » de la tarjeta.",
+
+  "badge.connected": "Conectado",
+  "badge.offline": "Desconectado",
+  "badge.flame": "Llama",
+  "badge.hopper_open": "Tapa abierta",
+  "badge.error": "Error",
+
+  "section.status": "Estado de la estufa",
+  "section.climate": "Calefacción",
+  "section.temperatures": "Temperaturas",
+  "section.fans": "Ventiladores",
+  "section.consumption": "Consumo y mantenimiento",
+  "section.mechanics": "Mecánica",
+  "section.bridge": "Pasarela",
+  "section.schedule": "Programación y protección",
+
+  "caption.ambient": "Ambiente",
+  "caption.target": "Consigna",
+  "caption.mode": "Modo",
+  "caption.power": "Potencia",
+  "caption.power_set": "(configurado {value} %)",
+  "caption.combustion": "Cámara de combustión",
+  "caption.board": "Placa base",
+  "caption.pellets": "Pellets consumidos",
+  "caption.operating_hours": "Horas de funcionamiento",
+  "caption.service": "Mantenimiento",
+  "caption.service_remaining": "quedan {value} kg",
+  "caption.draft": "Tiro",
+  "caption.auger": "Tornillo sin fin",
+  "caption.flaps": "Compuertas de aire",
+  "caption.flaps_target": "Compuertas (objetivo {value} %)",
+  "caption.wifi": "Wi-Fi · {quality}",
+  "caption.uptime": "Pasarela",
+  "caption.link": "Enlace de la estufa",
+  "caption.trim": "Ajuste de convección",
+  "caption.enabled": "Activado",
+  "caption.disabled": "Desactivado",
+  "caption.running": "En marcha",
+  "caption.stopped": "Detenido",
+  "caption.fan_on": "Marcha",
+  "caption.fan_off": "Parada",
+
+  "button.start": "Iniciar",
+  "button.stop": "Detener",
+
+  "aria.enable": "Activar",
+  "aria.disable": "Desactivar",
+  "aria.decrease_target": "Disminuir la consigna",
+  "aria.increase_target": "Aumentar la consigna",
+
+  "switch.heating_schedule": "Calefacción programada",
+  "switch.frost_protection": "Antihielo",
+
+  "preset.manual": "Manual",
+  "preset.auto": "Auto",
+  "preset.comfort": "Confort",
+
+  "quality.excellent": "Excelente",
+  "quality.good": "Bueno",
+  "quality.fair": "Regular",
+  "quality.weak": "Débil",
+  "quality.very_weak": "Muy débil",
+  "quality.none": "—",
+
+  "duration.days": "d",
+  "duration.hours": "h",
+  "duration.minutes": "min",
+
+  "state.off": "Apagado",
+  "state.standby": "En espera",
+  "state.ignition": "Encendido",
+  "state.flame_start": "Inicio de llama",
+  "state.heating": "Calentando",
+  "state.cleaning": "Limpieza",
+  "state.burn_off": "Extinción",
+  "state.splitlog": "Leña",
+  "state.splitlog_check": "Control de leña",
+  "state.splitlog_refuel": "Recargar leña",
+  "state.splitlog_no_refuel": "Leña — sin recarga",
+  "state.unknown": "Desconocido",
+
+  "editor.anchor": "Entidad ancla",
+  "editor.anchor_hint":
+    "Por defecto, la tarjeta encuentra todas las entidades del mismo dispositivo.",
+  "editor.title": "Título (opcional)",
+  "editor.title_placeholder": "Estufa de pellets",
+  "editor.show_controls": "Mostrar controles",
+  "editor.sections": "Secciones mostradas",
+  "editor.section.status": "Estado de la estufa",
+  "editor.section.climate":
+    "Calefacción (encendido/apagado, consigna, modo, potencia)",
+  "editor.section.temperatures": "Temperaturas",
+  "editor.section.fans": "Ventiladores MultiAir",
+  "editor.section.consumption": "Consumo y mantenimiento",
+  "editor.section.mechanics": "Mecánica (tiro, tornillo, compuertas)",
+  "editor.section.bridge": "Pasarela (Wi-Fi, tiempo de actividad, enlace)",
+  "editor.section.schedule": "Programación y protección antihielo",
+  "editor.expanded_sections": "Abiertas por defecto",
+  "editor.expanded_sections_hint":
+    "Las demás secciones están contraídas; haz clic en el encabezado de una sección para desplegarla.",
+};
+
+export const SUPPORTED_LANGUAGES = ["en", "fr", "es"] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const TRANSLATIONS: Record<SupportedLanguage, Record<TranslationKey, string>> = {
   en,
   fr,
+  es,
 };
 
 export interface DurationUnits {
@@ -238,6 +348,7 @@ export interface DurationUnits {
 export const DURATION_UNITS: Record<SupportedLanguage, DurationUnits> = {
   en: { days: en['duration.days'], hours: en['duration.hours'], minutes: en['duration.minutes'] },
   fr: { days: fr['duration.days'], hours: fr['duration.hours'], minutes: fr['duration.minutes'] },
+  es: { days: es['duration.days'], hours: es['duration.hours'], minutes: es['duration.minutes'] },
 };
 
 /**
