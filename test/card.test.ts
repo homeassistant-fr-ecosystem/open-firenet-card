@@ -634,17 +634,17 @@ describe('icon accents', () => {
   });
 });
 
+function headerFor(el: OpenFirenetCard, title: string): HTMLElement | undefined {
+  return Array.from(el.shadowRoot?.querySelectorAll('.section-header') ?? []).find((h) =>
+    h.querySelector('.section-title')?.textContent?.includes(title),
+  ) as HTMLElement | undefined;
+}
+
+function summaryFor(el: OpenFirenetCard, title: string): string | undefined {
+  return headerFor(el, title)?.querySelector('.section-summary')?.textContent?.trim();
+}
+
 describe('collapsed section summaries', () => {
-  function headerFor(el: OpenFirenetCard, title: string): HTMLElement | undefined {
-    return Array.from(el.shadowRoot?.querySelectorAll('.section-header') ?? []).find((h) =>
-      h.querySelector('.section-title')?.textContent?.includes(title),
-    ) as HTMLElement | undefined;
-  }
-
-  function summaryFor(el: OpenFirenetCard, title: string): string | undefined {
-    return headerFor(el, title)?.querySelector('.section-summary')?.textContent?.trim();
-  }
-
   it('keeps the target temperature in the collapsed heating header', async () => {
     const el = await mount({ expanded_sections: [] });
     expect(summaryFor(el, 'Chauffage')).toBe('22°C');
@@ -675,6 +675,40 @@ describe('collapsed section summaries', () => {
     await el.updateComplete;
     expect(summaryFor(el, 'Ventilateurs')).toBeUndefined();
     expect(text(el)).toContain('MultiAir 1');
+  });
+});
+
+describe('room temperature source', () => {
+  it('shows the dedicated room_temperature sensor when it differs from climate.current_temperature', async () => {
+    const hass = makeHass();
+    hass.states['sensor.open_firenet_room_temperature'] = st(
+      'sensor.open_firenet_room_temperature',
+      '20.1',
+    );
+    const el = document.createElement('open-firenet-card') as OpenFirenetCard;
+    el.setConfig({ entity: 'climate.open_firenet', expanded_sections: [] });
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    // climate says 21.4, the room_temperature sensor says 20.1: the sensor wins.
+    expect(summaryFor(el, 'Températures')).toBe('20,1°C');
+    // The status header also reflects the sensor value.
+    expect(text(el)).toContain('20,1°C');
+    expect(text(el)).not.toContain('21,4°C');
+  });
+
+  it('falls back to climate.current_temperature when the room_temperature sensor is unavailable', async () => {
+    const hass = makeHass();
+    hass.states['sensor.open_firenet_room_temperature'] = st(
+      'sensor.open_firenet_room_temperature',
+      'unavailable',
+    );
+    const el = document.createElement('open-firenet-card') as OpenFirenetCard;
+    el.setConfig({ entity: 'climate.open_firenet', expanded_sections: [] });
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    expect(summaryFor(el, 'Températures')).toBe('21,4°C');
   });
 });
 

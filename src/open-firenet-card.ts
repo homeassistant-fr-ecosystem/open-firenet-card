@@ -508,8 +508,9 @@ export class OpenFirenetCard extends LitElement {
       }
       case 'temperatures': {
         const ambient =
+          stateNumber(this._entity('room_temperature')) ??
           this._entity('climate')?.attributes.current_temperature ??
-          stateNumber(this._entity('room_temperature'));
+          null;
         if (ambient === null || ambient === undefined) {
           return null;
         }
@@ -661,8 +662,8 @@ export class OpenFirenetCard extends LitElement {
     }
     const info = stoveStateInfo(stateEntity?.state);
     const currentTemp =
-      climate?.attributes.current_temperature ??
-      stateNumber(this._entity('room_temperature'));
+      stateNumber(this._entity('room_temperature')) ??
+      climate?.attributes.current_temperature ?? null;
     const targetTemp = climate?.attributes.temperature ?? null;
     const ambientEntity = this.entities.room_temperature ?? this.entities.climate;
     const targetEntity = this.entities.climate;

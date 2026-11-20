@@ -17,6 +17,10 @@ used by the other Open Firenet repositories (`## Non publié`, `### New` /
   entity id) instead of showing an empty card with only its title.
 - A bad `service_interval` value (non-numeric or ≤ 0) no longer draws a `NaN%`
   maintenance bar: the default interval is used.
+- **Room temperature.** The ambient temperature now comes from the dedicated
+  `room_temperature` sensor (`sensor.open_firenet_room_temperature`) instead of
+  the `current_temperature` attribute of the climate entity, so it matches the
+  value shown in the stove's detail view.
 
 ### Changes
 - **Accessible controls.** Icon-only buttons (temperature −/+, fan and switch
