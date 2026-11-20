@@ -32,6 +32,7 @@ function makeHass(): HomeAssistant {
     entry('fan.open_firenet_multiair_1', 'multiair_1'),
     entry('number.open_firenet_heating_power', 'heating_power'),
     entry('switch.open_firenet_heating_schedule', 'heating_schedule'),
+    entry('sensor.open_firenet_log_runtime', 'log_runtime'),
     // Same platform, another device: must never be picked for this stove.
     entry('sensor.open_firenet_room_temperature_2', 'room_temperature', 'dev2'),
   ];
@@ -80,6 +81,7 @@ describe('discoverEntities', () => {
     expect(found.multiair_1).toBe('fan.open_firenet_multiair_1');
     expect(found.heating_power).toBe('number.open_firenet_heating_power');
     expect(found.heating_schedule).toBe('switch.open_firenet_heating_schedule');
+    expect(found.log_runtime).toBe('sensor.open_firenet_log_runtime');
   });
 
   it('never picks an entity from another device', () => {

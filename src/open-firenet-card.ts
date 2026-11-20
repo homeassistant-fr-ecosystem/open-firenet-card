@@ -949,6 +949,7 @@ export class OpenFirenetCard extends LitElement {
   private _renderConsumption(): TemplateResult | typeof nothing {
     const pellets = this._entity('pellets_total_kg');
     const hours = this._entity('pellet_hours');
+    const logRuntime = this._entity('log_runtime');
     const service = this._entity('service_countdown_kg');
     const tiles: TemplateResult[] = [];
 
@@ -973,6 +974,20 @@ export class OpenFirenetCard extends LitElement {
           'teal',
         ),
       );
+    }
+    if (isAvailable(logRuntime)) {
+      const runtime = stateNumber(logRuntime);
+      if (runtime !== null) {
+        tiles.push(
+          this._tile(
+            'mdi:fire',
+            `${formatNumber(runtime / 60, 1, this._lang)} h`,
+            this._t('caption.log_runtime'),
+            this.entities.log_runtime,
+            'heat',
+          ),
+        );
+      }
     }
 
     let serviceBlock: TemplateResult | typeof nothing = nothing;

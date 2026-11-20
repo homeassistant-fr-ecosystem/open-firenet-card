@@ -6,6 +6,12 @@ used by the other Open Firenet repositories (`## Non publié`, `### New` /
 
 ## Non publié
 
+### New
+- **Split log operating time.** The card now shows the "runtime log" sensor
+  (`sensor.open_firenet_log_runtime`, "Fonctionnement bois") in the
+  Consumption & maintenance section, as reported by the open-firenet
+  integration v2.15+.
+
 ### Fixes
 - When the configured `entity` does not exist, the card now says so (with the
   entity id) instead of showing an empty card with only its title.

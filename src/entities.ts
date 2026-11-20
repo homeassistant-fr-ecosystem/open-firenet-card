@@ -19,6 +19,7 @@ export type Role =
   | 'board_temperature'
   | 'pellets_total_kg'
   | 'pellet_hours'
+  | 'log_runtime'
   | 'service_countdown_kg'
   | 'fan_speed_rpm'
   | 'auger_speed_rpm'
@@ -57,6 +58,7 @@ export const ROLES: Record<Role, RoleSpec> = {
   board_temperature: { domain: 'sensor', key: 'board_temperature' },
   pellets_total_kg: { domain: 'sensor', key: 'pellets_total_kg' },
   pellet_hours: { domain: 'sensor', key: 'pellet_hours' },
+  log_runtime: { domain: 'sensor', key: 'log_runtime' },
   service_countdown_kg: { domain: 'sensor', key: 'service_countdown_kg' },
   fan_speed_rpm: { domain: 'sensor', key: 'fan_speed_rpm' },
   auger_speed_rpm: { domain: 'sensor', key: 'auger_speed_rpm' },

@@ -132,7 +132,7 @@ expanded_sections:
 
 `climate`, `stove_state`, `connected`, `burning`, `problem`, `hopper_lid`,
 `room_temperature`, `combustion_temperature`, `board_temperature`,
-`pellets_total_kg`, `pellet_hours`, `service_countdown_kg`, `fan_speed_rpm`,
+`pellets_total_kg`, `pellet_hours`, `log_runtime`, `service_countdown_kg`, `fan_speed_rpm`,
 `auger_speed_rpm`, `power_actual_percent`, `air_flaps_percent`,
 `air_flaps_target_percent`, `wifi_rssi`, `uptime_seconds`, `heating_power`,
 `setback_temperature`, `frost_protection_temperature`, `room_temperature_offset`,

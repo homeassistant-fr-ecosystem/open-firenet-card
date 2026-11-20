@@ -26,6 +26,7 @@ function makeHass(): HomeAssistant {
     reg('sensor.open_firenet_board_temperature', 'board_temperature'),
     reg('sensor.open_firenet_pellets_consumed', 'pellets_total_kg'),
     reg('sensor.open_firenet_pellet_operating_hours', 'pellet_hours'),
+    reg('sensor.open_firenet_log_runtime', 'log_runtime'),
     reg('sensor.open_firenet_service_countdown', 'service_countdown_kg'),
     reg('sensor.open_firenet_wifi_signal_strength', 'wifi_rssi'),
     reg('sensor.open_firenet_uptime', 'uptime_seconds'),
@@ -67,6 +68,7 @@ function makeHass(): HomeAssistant {
         'sensor.open_firenet_pellet_operating_hours',
         '680',
       ),
+      'sensor.open_firenet_log_runtime': st('sensor.open_firenet_log_runtime', '120'),
       'sensor.open_firenet_service_countdown': st(
         'sensor.open_firenet_service_countdown',
         '320',
@@ -154,6 +156,19 @@ describe('open-firenet-card rendering', () => {
     expect(content).toContain('Mécanique');
     expect(content).toContain('Passerelle');
     expect(content).toContain('Planning');
+  });
+
+  it('shows the split log operating time in the consumption section', async () => {
+    const el = await mount({});
+    const content = text(el);
+    expect(content).toContain('Fonctionnement bois');
+    // 120 minutes → 2 hours, shown with one decimal.
+    expect(content).toContain('2 h');
+    // The tile is clickable and opens the matching sensor's dialog.
+    const tile = Array.from(
+      el.shadowRoot?.querySelectorAll('.tile.clickable') ?? [],
+    ).find((t) => t.textContent?.includes('Fonctionnement bois'));
+    expect(tile).toBeDefined();
   });
 
   it('exposes interactive controls by default', async () => {
@@ -545,6 +560,17 @@ describe('more-info on sensor values', () => {
       new Event('click'),
     );
     expect(events.last()).toBe('sensor.open_firenet_service_countdown');
+  });
+
+  it('opens the log runtime modal from its tile', async () => {
+    const el = await mount({});
+    const events = captureMoreInfo(el);
+    const tile = Array.from(el.shadowRoot?.querySelectorAll('.tile') ?? []).find(
+      (t) => t.textContent?.includes('Fonctionnement bois'),
+    );
+    expect(tile).toBeDefined();
+    tile!.dispatchEvent(new Event('click'));
+    expect(events.last()).toBe('sensor.open_firenet_log_runtime');
   });
 
   it('supports keyboard activation (Enter / Space)', async () => {
