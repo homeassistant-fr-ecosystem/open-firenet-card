@@ -527,7 +527,10 @@ export class OpenFirenetCard extends LitElement {
           return null;
         }
         const on = fans.filter((f) => f.state === 'on').length;
-        return { text: `${on}/${fans.length}`, entityId: this.entities.multiair_1 };
+        return {
+          text: `${on}/${fans.length}`,
+          entityId: this.entities.multiair_1 ?? this.entities.multiair_2,
+        };
       }
       case 'consumption': {
         const pellets = this._entity('pellets_total_kg');
@@ -786,6 +789,16 @@ export class OpenFirenetCard extends LitElement {
     const max = Number(powerEntity?.attributes.max ?? 100);
     const step = Number(powerEntity?.attributes.step ?? 5);
     const sliderValue = value ?? min;
+    /** Barre de progression relative à l'intervalle [min, max]. */
+    const progressPct =
+      display !== null &&
+      Number.isFinite(min) &&
+      Number.isFinite(max) &&
+      max > min
+        ? Math.max(0, Math.min(100, ((display - min) / (max - min)) * 100))
+        : Number.isFinite(display)
+          ? display
+          : 0;
 
     return html`
       <div class="slider-row">
@@ -800,7 +813,7 @@ export class OpenFirenetCard extends LitElement {
                 this._setNumber('heating_power', Number((e.target as HTMLInputElement).value))}
             />`
           : html`<div class="progress">
-              <span style="width: ${display ?? 0}%"></span>
+              <span style="width: ${progressPct}%"></span>
             </div>`}
         <div class="caption">
           <span>${this._t('caption.power')}</span>

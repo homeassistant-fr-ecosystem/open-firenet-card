@@ -33,7 +33,7 @@
   "caption.flaps": "Compuertas de aire",
   "caption.flaps_target": "Compuertas (objetivo {value} %)",
   "caption.wifi": "Wi-Fi · {quality}",
-  "caption.uptime": "Pasarela",
+  "caption.uptime": "Tiempo de actividad",
   "caption.link": "Enlace de la estufa",
   "caption.trim": "Ajuste de convección",
   "caption.enabled": "Activado",

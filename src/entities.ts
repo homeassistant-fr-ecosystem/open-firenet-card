@@ -127,7 +127,14 @@ function collectCandidates(hass: HomeAssistant, anchor?: string): string[] {
   // after the integration itself (`climate.open_firenet`, no role suffix).
   return Object.keys(hass.states).filter((id) => {
     const objectId = id.split('.')[1] ?? '';
-    return objectId === DOMAIN || objectId.startsWith(`${DOMAIN}_`);
+    const matchName =
+      objectId === DOMAIN || objectId.startsWith(`${DOMAIN}_`);
+    if (!deviceId) {
+      return matchName;
+    }
+    return (
+      matchName && (registry[id]?.device_id === deviceId)
+    );
   });
 }
 

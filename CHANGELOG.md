@@ -21,6 +21,16 @@ used by the other Open Firenet repositories (`## Non publié`, `### New` /
   `room_temperature` sensor (`sensor.open_firenet_room_temperature`) instead of
   the `current_temperature` attribute of the climate entity, so it matches the
   value shown in the stove's detail view.
+- **Power bar.** The power slider progress bar now respects the configured
+  `[min, max]` range instead of drawing the raw value as a percentage.
+- **Translations.** Fixed the "uptime" caption in French ("Durée de
+  fonctionnement" instead of "Passerelle") and Spanish ("Tiempo de actividad"
+  instead of "Pasarela").
+- **Fans summary.** The collapsed "Fans" section header now links to the first
+  available fan (`multiair_1` or `multiair_2`) instead of always `multiair_1`.
+- **Entity discovery.** The last-resort entity fallback now also respects the
+  anchor device's `device_id`, so two stoves on the same platform are not
+  confused.
 
 ### Changes
 - **Accessible controls.** Icon-only buttons (temperature −/+, fan and switch

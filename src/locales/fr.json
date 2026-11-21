@@ -33,7 +33,7 @@
   "caption.flaps": "Volets d'air",
   "caption.flaps_target": "Volets (cible {value} %)",
   "caption.wifi": "Wi-Fi · {quality}",
-  "caption.uptime": "Passerelle",
+  "caption.uptime": "Durée de fonctionnement",
   "caption.link": "Liaison poêle",
   "caption.trim": "Trim convection",
   "caption.enabled": "Activé",
