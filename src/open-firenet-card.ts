@@ -334,6 +334,23 @@ export class OpenFirenetCard extends LitElement {
     this.hass.callService(domain, service, data);
   }
 
+  /**
+   * Call a Home Assistant service on the entity resolved for a role.
+   * `role` can be `'climate'` (anchor entity) or any other `Role`.
+   */
+  private _callServiceForRole(
+    role: Role | 'climate',
+    domain: string,
+    service: string,
+    data: Record<string, unknown> = {}
+  ): void {
+    const id = role === 'climate' ? this.entities.climate : this.entities[role];
+    if (!id) {
+      return;
+    }
+    this._call(domain, service, { entity_id: id, ...data });
+  }
+
   /** Ask the dashboard to open the more-info dialog of an entity. */
   private _moreInfo(entityId?: string): void {
     if (!entityId) {
@@ -359,10 +376,9 @@ export class OpenFirenetCard extends LitElement {
   }
 
   private _setHvac(on: boolean): void {
-    const id = this.entities.climate;
-    if (id) {
-      this._call('climate', 'set_hvac_mode', { entity_id: id, hvac_mode: on ? 'heat' : 'off' });
-    }
+    this._callServiceForRole('climate', 'climate', 'set_hvac_mode', {
+      hvac_mode: on ? 'heat' : 'off',
+    });
   }
 
   private _adjustTemp(delta: number): void {
@@ -375,43 +391,31 @@ export class OpenFirenetCard extends LitElement {
     const min = Number(climate.attributes.min_temp ?? 14);
     const max = Number(climate.attributes.max_temp ?? 28);
     const current = Number(climate.attributes.temperature ?? min);
-    const next = Math.min(max, Math.max(min, current + delta * step));
-    this._call('climate', 'set_temperature', { entity_id: id, temperature: next });
+    const safeStep = Number.isFinite(step) && step > 0 ? step : 1;
+    const next = Math.min(max, Math.max(min, current + delta * safeStep));
+    this._callServiceForRole('climate', 'climate', 'set_temperature', {
+      temperature: next,
+    });
   }
 
   private _setPreset(mode: string): void {
-    const id = this.entities.climate;
-    if (id) {
-      this._call('climate', 'set_preset_mode', { entity_id: id, preset_mode: mode });
-    }
+    this._callServiceForRole('climate', 'climate', 'set_preset_mode', { preset_mode: mode });
   }
 
   private _setNumber(role: Role, value: number): void {
-    const id = this.entities[role];
-    if (id) {
-      this._call('number', 'set_value', { entity_id: id, value });
-    }
+    this._callServiceForRole(role, 'number', 'set_value', { value });
   }
 
   private _toggleSwitch(role: Role, on: boolean): void {
-    const id = this.entities[role];
-    if (id) {
-      this._call('switch', on ? 'turn_on' : 'turn_off', { entity_id: id });
-    }
+    this._callServiceForRole(role, 'switch', on ? 'turn_on' : 'turn_off');
   }
 
   private _toggleFan(role: Role, on: boolean): void {
-    const id = this.entities[role];
-    if (id) {
-      this._call('fan', on ? 'turn_on' : 'turn_off', { entity_id: id });
-    }
+    this._callServiceForRole(role, 'fan', on ? 'turn_on' : 'turn_off');
   }
 
   private _setFanPreset(role: Role, preset: string): void {
-    const id = this.entities[role];
-    if (id) {
-      this._call('fan', 'set_preset_mode', { entity_id: id, preset_mode: preset });
-    }
+    this._callServiceForRole(role, 'fan', 'set_preset_mode', { preset_mode: preset });
   }
 
   // ---------------------------------------------------------------- render

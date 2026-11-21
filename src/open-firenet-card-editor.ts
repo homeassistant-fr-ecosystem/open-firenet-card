@@ -2,6 +2,7 @@ import { LitElement, css, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import { DEFAULT_EXPANDED_SECTIONS, DOMAIN } from './const';
+import { ROLES, type Role } from './entities';
 import { localize, pickLanguage, type SupportedLanguage, type TranslationKey } from './localize';
 import {
   COLLAPSIBLE_SECTIONS,
@@ -75,6 +76,22 @@ export class OpenFirenetCardEditor extends LitElement {
       accent-color: var(--primary-color);
       width: 18px;
       height: 18px;
+    }
+    .checkbox-row.role-override input[type='text'] {
+      width: auto;
+      flex: 1;
+      min-width: 120px;
+    }
+    .checkbox-row.role-override label {
+      font-size: 0.8rem;
+      min-width: 110px;
+      color: var(--primary-text-color);
+    }
+    .role-overrides {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+      margin-top: 4px;
     }
     .hint {
       font-size: 0.78rem;
@@ -163,6 +180,10 @@ export class OpenFirenetCardEditor extends LitElement {
     this._update({ expanded_sections: next });
   }
 
+  private _setRoleOverride(role: Role, value: string): void {
+    this._update({ [role]: value || undefined });
+  }
+
   protected override render(): TemplateResult | typeof nothing {
     if (!this._config) {
       return nothing;
@@ -211,8 +232,34 @@ export class OpenFirenetCardEditor extends LitElement {
         </div>
 
         <div class="field">
+          <label class="title">${this._t('editor.language')}</label>
+          <input
+            type="text"
+            .value=${this._config.language ?? ''}
+            placeholder="en"
+            @input=${(ev: Event) =>
+              this._update({ language: (ev.target as HTMLInputElement).value || undefined })}
+          />
+          <span class="hint">${this._t('editor.language_hint')}</span>
+        </div>
+
+        <div class="field">
+          <label class="title">${this._t('editor.service_interval')}</label>
+          <input
+            type="number"
+            min="0"
+            .value=${String(this._config.service_interval ?? '')}
+            @input=${(ev: Event) => {
+              const raw = (ev.target as HTMLInputElement).value;
+              this._update({ service_interval: raw === '' ? undefined : Number(raw) });
+            }}
+          />
+          <span class="hint">${this._t('editor.service_interval_hint')}</span>
+        </div>
+
+        <div class="field">
           <label class="title">${this._t('editor.sections')}</label>
-          ${SECTION_IDS.map(
+          ${COLLAPSIBLE_SECTIONS.map(
             (id) => html`<div class="checkbox-row">
               <input
                 id=${`section-${id}`}
@@ -224,6 +271,7 @@ export class OpenFirenetCardEditor extends LitElement {
               <label for=${`section-${id}`}>${this._t(SECTION_LABEL_KEYS[id])}</label>
             </div>`,
           )}
+          <span class="hint">${this._t('editor.sections_hint')}</span>
         </div>
 
         <div class="field">
@@ -241,6 +289,25 @@ export class OpenFirenetCardEditor extends LitElement {
             </div>`,
           )}
           <span class="hint">${this._t('editor.expanded_sections_hint')}</span>
+        </div>
+
+        <div class="field">
+          <label class="title">${this._t('editor.role_overrides')}</label>
+          <span class="hint">${this._t('editor.role_overrides_hint')}</span>
+          <div class="role-overrides">
+            ${Object.keys(ROLES).map(
+              (role) => html`<div class="checkbox-row">
+                <label for=${`role-override-${role}`}>${role}</label>
+                <input
+                  id=${`role-override-${role}`}
+                  type="text"
+                  .value=${String(this._config?.[role] ?? '')}
+                  @input=${(ev: Event) =>
+                    this._setRoleOverride(role as Role, (ev.target as HTMLInputElement).value)}
+                />
+              </div>`,
+            )}
+          </div>
         </div>
       </div>
     `;

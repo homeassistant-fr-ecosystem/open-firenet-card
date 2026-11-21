@@ -89,5 +89,12 @@
   "editor.section.bridge": "Pasarela (Wi-Fi, tiempo de actividad, enlace)",
   "editor.section.schedule": "Programación y protección antihielo",
   "editor.expanded_sections": "Abiertas por defecto",
-  "editor.expanded_sections_hint": "Las demás secciones están contraídas; haz clic en el encabezado de una sección para desplegarla."
+  "editor.expanded_sections_hint": "Las demás secciones están contraídas; haz clic en el encabezado de una sección para desplegarla.",
+  "editor.sections_hint": "La sección `status` es siempre visible.",
+  "editor.language": "Idioma",
+  "editor.language_hint": "Forzar el idioma de la tarjeta (en, fr, es). Por defecto sigue Home Assistant.",
+  "editor.service_interval": "Intervalo de mantenimiento (kg)",
+  "editor.service_interval_hint": "Kilogramos de pellets entre servicios. Se usa para la barra de mantenimiento.",
+  "editor.role_overrides": "Reemplazos de entidad por rol",
+  "editor.role_overrides_hint": "Forzar una entidad específica para un rol. Déjelo vacío para usar el descubrimiento automático."
 }

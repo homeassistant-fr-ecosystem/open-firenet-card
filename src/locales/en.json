@@ -89,5 +89,12 @@
   "editor.section.bridge": "Bridge (Wi-Fi, uptime, link)",
   "editor.section.schedule": "Schedule & frost protection",
   "editor.expanded_sections": "Expanded by default",
-  "editor.expanded_sections_hint": "The other sections start collapsed; click a section header to expand it."
+  "editor.expanded_sections_hint": "The other sections start collapsed; click a section header to expand it.",
+  "editor.sections_hint": "The `status` section is always visible.",
+  "editor.language": "Language",
+  "editor.language_hint": "Force the card language (en, fr, es). Follows Home Assistant by default.",
+  "editor.service_interval": "Maintenance interval (kg)",
+  "editor.service_interval_hint": "Kilograms of pellets between services. Used for the maintenance bar.",
+  "editor.role_overrides": "Entity overrides by role",
+  "editor.role_overrides_hint": "Force a specific entity for a role. Leave empty to use auto-discovery."
 }

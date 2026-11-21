@@ -31,6 +31,22 @@ used by the other Open Firenet repositories (`## Non publié`, `### New` /
 - **Entity discovery.** The last-resort entity fallback now also respects the
   anchor device's `device_id`, so two stoves on the same platform are not
   confused.
+- **Service calls.** All action methods (`_setHvac`, `_adjustTemp`, `_setPreset`,
+  `_setNumber`, `_toggleSwitch`, `_toggleFan`, `_setFanPreset`) now go through a
+  single `_callServiceForRole` helper, removing duplicated entity-resolution
+  logic.
+- **`_adjustTemp` safety.** A non-numeric or ≤ 0 `target_temp_step` now falls
+  back to 1 instead of producing `NaN`.
+- **Editor.** The `status` section is no longer offered as a toggleable section
+  (it is always visible).
+
+### New
+- **Editor language field.** The visual editor now exposes the `language`
+  option.
+- **Editor service interval.** The visual editor now exposes the
+  `service_interval` option.
+- **Editor role overrides.** The visual editor now offers per-role entity
+  overrides for every supported role.
 
 ### Changes
 - **Accessible controls.** Icon-only buttons (temperature −/+, fan and switch
