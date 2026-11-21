@@ -1,10 +1,9 @@
-import { en } from './en';
-import { fr } from './fr';
-import { es } from './es';
-import type { TranslationKey } from './en';
+import en from './en.json';
+import fr from './fr.json';
+import es from './es.json';
 
 export { en, fr, es };
-export type { TranslationKey };
+export type TranslationKey = keyof typeof en;
 
 export const SUPPORTED_LANGUAGES = ['en', 'fr', 'es'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];

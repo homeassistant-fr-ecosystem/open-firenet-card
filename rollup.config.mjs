@@ -1,4 +1,5 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import json from '@rollup/plugin-json';
 import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 
@@ -11,6 +12,7 @@ export default {
   },
   plugins: [
     nodeResolve(),
+    json(),
     typescript({
       tsconfig: './tsconfig.json',
       include: ['src/**/*.ts'],
