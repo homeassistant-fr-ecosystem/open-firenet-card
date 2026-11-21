@@ -145,8 +145,8 @@ Voir [`example-dashboard.yaml`](example-dashboard.yaml).
 ## Langue
 
 L'interface de la carte et de l'éditeur suit la langue de Home Assistant :
-**français** et **anglais** sont fournis, avec repli sur l'anglais pour toute
-autre langue. Pour forcer une langue, utilisez l'option `language` :
+**français**, **anglais** et **espagnol** sont fournis, avec repli sur l'anglais
+pour toute autre langue. Pour forcer une langue, utilisez l'option `language` :
 
 ```yaml
 type: custom:open-firenet-card
@@ -154,9 +154,10 @@ entity: climate.open_firenet
 language: en
 ```
 
-Pour ajouter une langue, complétez le dictionnaire dans `src/localize.ts` :
-le type TypeScript impose de fournir toutes les clés de la langue de référence
-(`en`), et un test vérifie la complétude.
+Chaque langue a son propre fichier sous `src/locales/` (par exemple
+`src/locales/fr.ts`). `src/locales/en.ts` est le dictionnaire de référence ;
+chaque autre langue doit définir toutes ses clés, et un test vérifie la
+complétude.
 
 ## Développement
 

@@ -1,0 +1,112 @@
+import type { TranslationKey } from './en';
+
+/**
+ * French dictionary. Every key from `en` must be present.
+ */
+export const fr: Record<TranslationKey, string> = {
+  'card.default_title': 'Poêle à granulés',
+  'error.config_missing': 'open-firenet-card : configuration manquante',
+  'error.no_entities':
+    "Aucune entité Open Firenet trouvée. Vérifiez que l'intégration est installée ou renseignez l'option « entity ».",
+  'error.entity_not_found':
+    "L'entité « {entity} » est introuvable. Vérifiez l'option « entity » de la carte.",
+
+  'badge.connected': 'Connecté',
+  'badge.offline': 'Hors ligne',
+  'badge.flame': 'Flamme',
+  'badge.hopper_open': 'Couvercle ouvert',
+  'badge.error': 'Erreur',
+
+  'section.status': 'Statut du poêle',
+  'section.climate': 'Chauffage',
+  'section.temperatures': 'Températures',
+  'section.fans': 'Ventilateurs',
+  'section.consumption': 'Consommation & entretien',
+  'section.mechanics': 'Mécanique',
+  'section.bridge': 'Passerelle',
+  'section.schedule': 'Planning & protection',
+
+  'caption.ambient': 'Ambiante',
+  'caption.target': 'Consigne',
+  'caption.mode': 'Mode',
+  'caption.power': 'Puissance',
+  'caption.power_set': '(réglée {value} %)',
+  'caption.combustion': 'Chambre de combustion',
+  'caption.board': 'Carte mère',
+  'caption.pellets': 'Granulés consommés',
+  'caption.operating_hours': 'Heures de fonctionnement',
+  'caption.log_runtime': 'Fonctionnement bois',
+  'caption.service': 'Entretien',
+  'caption.service_remaining': 'reste {value} kg',
+  'caption.draft': 'Tirage',
+  'caption.auger': 'Vis sans fin',
+  'caption.flaps': "Volets d'air",
+  'caption.flaps_target': "Volets (cible {value} %)",
+  'caption.wifi': 'Wi-Fi · {quality}',
+  'caption.uptime': 'Passerelle',
+  'caption.link': 'Liaison poêle',
+  'caption.trim': 'Trim convection',
+  'caption.enabled': 'Activé',
+  'caption.disabled': 'Désactivé',
+  'caption.running': 'En marche',
+  'caption.stopped': "À l'arrêt",
+  'caption.fan_on': 'Marche',
+  'caption.fan_off': 'Arrêt',
+
+  'button.start': 'Démarrer',
+  'button.stop': 'Arrêter',
+
+  'aria.enable': 'Activer',
+  'aria.disable': 'Désactiver',
+  'aria.decrease_target': 'Diminuer la consigne',
+  'aria.increase_target': 'Augmenter la consigne',
+
+  'switch.heating_schedule': 'Chauffage programmé',
+  'switch.frost_protection': 'Hors-gel',
+
+  'preset.manual': 'Manuel',
+  'preset.auto': 'Auto',
+  'preset.comfort': 'Confort',
+
+  'quality.excellent': 'Excellent',
+  'quality.good': 'Bon',
+  'quality.fair': 'Moyen',
+  'quality.weak': 'Faible',
+  'quality.very_weak': 'Très faible',
+  'quality.none': '—',
+
+  'duration.days': 'j',
+  'duration.hours': 'h',
+  'duration.minutes': 'min',
+
+  'state.off': 'Éteint',
+  'state.standby': 'Veille',
+  'state.ignition': 'Allumage',
+  'state.flame_start': 'Démarrage flamme',
+  'state.heating': 'En chauffe',
+  'state.cleaning': 'Nettoyage',
+  'state.burn_off': 'Extinction',
+  'state.splitlog': 'Bûche',
+  'state.splitlog_check': 'Contrôle bûche',
+  'state.splitlog_refuel': 'Recharger la bûche',
+  'state.splitlog_no_refuel': 'Bûche — pas de rechargement',
+  'state.unknown': 'Inconnu',
+
+  'editor.anchor': 'Entité ancre',
+  'editor.anchor_hint': 'Par défaut, la carte retrouve toutes les entités du même appareil.',
+  'editor.title': 'Titre (optionnel)',
+  'editor.title_placeholder': 'Poêle à granulés',
+  'editor.show_controls': 'Afficher les contrôles',
+  'editor.sections': 'Sections affichées',
+  'editor.section.status': 'Statut du poêle',
+  'editor.section.climate': 'Chauffage (marche/arrêt, consigne, mode, puissance)',
+  'editor.section.temperatures': 'Températures',
+  'editor.section.fans': 'Ventilateurs MultiAir',
+  'editor.section.consumption': 'Consommation & entretien',
+  'editor.section.mechanics': 'Mécanique (tirage, vis, volets)',
+  'editor.section.bridge': 'Passerelle (Wi-Fi, uptime, liaison)',
+  'editor.section.schedule': 'Planning & protection hors-gel',
+  'editor.expanded_sections': 'Ouvertes par défaut',
+  'editor.expanded_sections_hint':
+    "Les autres sections sont repliées ; cliquez sur l'en-tête d'une section pour la déplier.",
+};

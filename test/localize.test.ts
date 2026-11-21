@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  TRANSLATIONS,
   localize,
   pickLanguage,
   translator,
-  type TranslationKey,
 } from '../src/localize';
+import { TRANSLATIONS, type TranslationKey } from '../src/locales';
 
 describe('pickLanguage', () => {
   it('uses an explicit override first', () => {

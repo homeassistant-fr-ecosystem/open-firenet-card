@@ -138,9 +138,9 @@ See [`example-dashboard.yaml`](example-dashboard.yaml).
 
 ## Language
 
-The card and editor UI follow the Home Assistant language: **English** and
-**French** are provided, falling back to English for any other language. To force
-a language, use the `language` option:
+The card and editor UI follow the Home Assistant language: **English**,
+**French** and **Spanish** are provided, falling back to English for any other
+language. To force a language, use the `language` option:
 
 ```yaml
 type: custom:open-firenet-card
@@ -148,9 +148,9 @@ entity: climate.open_firenet
 language: en
 ```
 
-To add a language, complete the dictionary in `src/localize.ts`: the TypeScript
-type requires every key of the reference language (`en`), and a test checks
-completeness.
+Each language lives in its own file under `src/locales/` (e.g. `src/locales/fr.ts`).
+`src/locales/en.ts` is the reference dictionary; every other language must define
+all of its keys, and a test checks completeness.
 
 ## Development
 

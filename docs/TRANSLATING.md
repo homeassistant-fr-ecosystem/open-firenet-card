@@ -1,35 +1,51 @@
 # Translating the card
 
-The card and the visual editor are available in English and French, and follow
-the Home Assistant language by default (falling back to English). Adding a
+The card and the visual editor are available in English, French and Spanish, and
+follow the Home Assistant language by default (falling back to English). Adding a
 language needs no programming.
 
 ## Where the texts live
 
-Everything is in one file: [`src/localize.ts`](../src/localize.ts).
+Each language has its own file under [`src/locales/`](../src/locales/):
 
-- `en` is the **reference** dictionary. Every other language must define exactly
-  the same keys: the TypeScript type `Record<TranslationKey, string>` refuses a
-  missing or misspelled key, and a test checks there is no empty value.
-- Each language is a `const xx: Record<TranslationKey, string> = { ... }`.
+- [`src/locales/en.ts`](../src/locales/en.ts) is the **reference** dictionary.
+  Every other language must define exactly the same keys: the TypeScript type
+  `Record<TranslationKey, string>` refuses a missing or misspelled key, and a
+  test checks there is no empty value.
+- Each language is exported as a `const xx: Record<TranslationKey, string> =
+  { ... }`.
 - Interpolated values are written `{name}` and filled in with the `params`
   argument of `localize()` — for example `'caption.service_remaining'` uses
   `{value}`.
 
+All dictionaries are aggregated in
+[`src/locales/index.ts`](../src/locales/index.ts), which builds
+`SUPPORTED_LANGUAGES`, `TRANSLATIONS` and `DURATION_UNITS`.
+
 ## Adding a language
 
-1. Copy the `en` object into a new `const de: Record<TranslationKey, string>`.
+1. Copy [`src/locales/en.ts`](../src/locales/en.ts) to
+   `src/locales/xx.ts`, where `xx` is the language code (e.g. `de`, `it`, `nl`).
 2. Translate every value. Do not translate the `{placeholders}` or the key names.
-3. Register the code:
+3. Register the code in [`src/locales/index.ts`](../src/locales/index.ts):
    ```ts
-   export const SUPPORTED_LANGUAGES = ['en', 'fr', 'de'] as const;
-   export const TRANSLATIONS = { en, fr, de };
+   import { xx } from './xx';
+   // …
+   export const SUPPORTED_LANGUAGES = ['en', 'fr', 'es', 'xx'] as const;
+   export const TRANSLATIONS: Record<SupportedLanguage, Record<TranslationKey, string>> = {
+     en,
+     fr,
+     es,
+     xx,
+   };
+   export const DURATION_UNITS: Record<SupportedLanguage, DurationUnits> = {
+     en: { days: en['duration.days'], hours: en['duration.hours'], minutes: en['duration.minutes'] },
+     fr: { days: fr['duration.days'], hours: fr['duration.hours'], minutes: fr['duration.minutes'] },
+     es: { days: es['duration.days'], hours: es['duration.hours'], minutes: es['duration.minutes'] },
+     xx: { days: xx['duration.days'], hours: xx['duration.hours'], minutes: xx['duration.minutes'] },
+   };
    ```
-4. Add the duration units if the language needs its own abbreviations:
-   ```ts
-   export const DURATION_UNITS = { en, fr, de };
-   ```
-5. Run the tests and the type check:
+4. Run the tests and the type check:
    ```bash
    npm test
    npm run typecheck
