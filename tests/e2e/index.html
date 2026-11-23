@@ -4,18 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Open Firenet Card — E2E smoke test</title>
-    <script type="module" src="../dist/open-firenet-card.js"></script>
+    <script type="module" src="/dist/open-firenet-card.js"></script>
   </head>
   <body>
     <div id="result"></div>
     <script>
-      const result = document.getElementById('result');
-      const tag = customElements.get('open-firenet-card');
-      if (tag) {
-        result.textContent = 'custom element defined: OK';
-      } else {
-        result.textContent = 'custom element defined: MISSING';
-      }
+      // Wait a bit for the module to execute, then check
+      setTimeout(() => {
+        const tag = customElements.get('open-firenet-card');
+        if (tag) {
+          result.textContent = 'custom element defined: OK';
+        } else {
+          result.textContent = 'custom element defined: MISSING';
+        }
+      }, 100);
     </script>
   </body>
 </html>
