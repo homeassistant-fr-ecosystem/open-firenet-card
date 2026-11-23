@@ -8,10 +8,10 @@ language needs no programming.
 
 Each language has its own file under [`src/locales/`](../src/locales/):
 
-- [`src/locales/en.ts`](../src/locales/en.ts) is the **reference** dictionary.
-  Every other language must define exactly the same keys: the TypeScript type
-  `Record<TranslationKey, string>` refuses a missing or misspelled key, and a
-  test checks there is no empty value.
+- [`src/locales/en.json`](../src/locales/en.json) is the **reference**
+  dictionary. Every other language must define exactly the same keys: the
+  TypeScript type `Record<TranslationKey, string>` refuses a missing or
+  misspelled key, and a test checks there is no empty value.
 - Each language is exported as a `const xx: Record<TranslationKey, string> =
   { ... }`.
 - Interpolated values are written `{name}` and filled in with the `params`
@@ -24,8 +24,8 @@ All dictionaries are aggregated in
 
 ## Adding a language
 
-1. Copy [`src/locales/en.ts`](../src/locales/en.ts) to
-   `src/locales/xx.ts`, where `xx` is the language code (e.g. `de`, `it`, `nl`).
+1. Copy [`src/locales/en.json`](../src/locales/en.json) to
+   `src/locales/xx.json`, where `xx` is the language code (e.g. `de`, `it`, `nl`).
 2. Translate every value. Do not translate the `{placeholders}` or the key names.
 3. Register the code in [`src/locales/index.ts`](../src/locales/index.ts):
    ```ts

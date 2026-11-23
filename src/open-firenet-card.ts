@@ -92,6 +92,9 @@ export class OpenFirenetCard extends LitElement {
   /** User toggles made on the collapsible headers: `true` = expanded. */
   @state() private _sectionOverrides = new Map<SectionId, boolean>();
 
+  /** Transient service-call error shown to the user (auto-clears after 5s). */
+  @state() private _error?: string;
+
   private _unsubscribe?: () => void;
 
   private _cache?: {
@@ -330,8 +333,20 @@ export class OpenFirenetCard extends LitElement {
 
   // ---------------------------------------------------------------- actions
 
-  private _call(domain: string, service: string, data: Record<string, unknown>): void {
-    this.hass.callService(domain, service, data);
+  /**
+   * Call a Home Assistant service. Errors are caught and surfaced to the user
+   * via a transient banner instead of failing silently.
+   */
+  private async _call(domain: string, service: string, data: Record<string, unknown>): Promise<void> {
+    try {
+      await this.hass.callService(domain, service, data);
+      this._error = undefined;
+    } catch (err) {
+      this._error = err instanceof Error ? err.message : String(err);
+      window.setTimeout(() => {
+        this._error = undefined;
+      }, 5000);
+    }
   }
 
   /**
@@ -424,12 +439,15 @@ export class OpenFirenetCard extends LitElement {
     if (!this.hass || !this._config) {
       return nothing;
     }
-    const error = this._renderError();
+    const configError = this._renderError();
+    const serviceError = this._error
+      ? html`<div class="error-text">${this._error}</div>`
+      : null;
     return html`
       <ha-card>
         <div class="card">
           ${this._renderHeader()}
-          ${error ?? this._sections.map((section) => this._renderSection(section))}
+          ${serviceError ?? configError ?? this._sections.map((section) => this._renderSection(section))}
         </div>
       </ha-card>
     `;

@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Ensure the bundle is built and committed before pushing.
+# Mirrors the CI `dist-freshness` job so a stale dist/ never reaches HACS.
+
+echo "Building bundle..."
+npm run build
+
+if ! git diff --quiet -- dist/; then
+  echo ""
+  echo "::error::dist/ is out of date. Run 'npm run build' and commit the result before pushing."
+  git --no-pager diff --stat -- dist/
+  exit 1
+fi
+
+echo "dist/ matches the sources — push allowed."

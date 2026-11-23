@@ -103,7 +103,8 @@ export class OpenFirenetCardEditor extends LitElement {
 
   @state() private _config?: OpenFirenetCardConfig;
 
-  private readonly _datalistId = `ofn-entities-${Math.random().toString(36).slice(2, 8)}`;
+  private static _datalistCounter = 0;
+  private readonly _datalistId = `ofn-entities-${OpenFirenetCardEditor._datalistCounter++}`;
 
   public setConfig(config: OpenFirenetCardConfig): void {
     this._config = config;

@@ -14,7 +14,7 @@ In short:
   browser, and the card configuration.
 - **Translations**: see [docs/TRANSLATING.md](docs/TRANSLATING.md). No
   programming needed. Each language lives in its own file under
-  `src/locales/` (e.g. `src/locales/fr.ts`). See "Adding a language" below.
+  `src/locales/` (e.g. `src/locales/fr.json`). See "Adding a language" below.
 - **The bridge / firmware** and the **Home Assistant integration** live in their
   own repositories: [open-firenet](https://github.com/openfirenet/open-firenet)
   and [open-firenet-ha](https://github.com/openfirenet/open-firenet-ha).
@@ -37,12 +37,12 @@ Home Assistant instance.
 
 ### Adding a language
 
-Each language has its own file in `src/locales/` (e.g. `fr.ts`, `es.ts`).
-`src/locales/en.ts` is the reference dictionary; every other language must
+Each language has its own file in `src/locales/` (e.g. `fr.json`, `es.json`).
+`src/locales/en.json` is the reference dictionary; every other language must
 define all of its keys (a test enforces this).
 
-1. Copy `src/locales/en.ts` to `src/locales/xx.ts` where `xx` is the language
-   code (e.g. `de`, `it`, `nl`).
+1. Copy `src/locales/en.json` to `src/locales/xx.json` where `xx` is the
+   language code (e.g. `de`, `it`, `nl`).
 2. Translate every string value, keeping the keys and `{name}` placeholders
    identical.
 3. Add `xx` to `SUPPORTED_LANGUAGES` in `src/locales/index.ts` and register it
